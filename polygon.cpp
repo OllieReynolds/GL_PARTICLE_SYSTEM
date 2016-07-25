@@ -10,7 +10,7 @@ namespace graphics {
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(
 			GL_ARRAY_BUFFER, 
-			num_vertices * sizeof(maths::vec3),
+			300 * sizeof(maths::vec3),
 			&vertices[0],
 			GL_STATIC_DRAW
 		);
@@ -85,5 +85,18 @@ namespace graphics {
 
 		if (num_uvs > 0)
 			glDeleteTextures(1, &data);
+	}
+
+	void Polygon::add_vertex(const maths::vec3& v) {
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferSubData(
+			GL_ARRAY_BUFFER,
+			num_vertices * sizeof(maths::vec3),
+			sizeof(maths::vec3),
+			&v[0]
+		);
+		glBindVertexArray(0);
+		num_vertices++;
 	}
 }

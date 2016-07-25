@@ -1,6 +1,8 @@
 #include "simulation.hpp"
 
 namespace simulation {
+	graphics::Polygon Simulation::polygon_simple = {};
+
 	void Simulation::init_simulation() {
 		text.init_text(32.f);
 		
@@ -97,5 +99,15 @@ namespace simulation {
 		polygon_simple.destroy_polygon();
 		polygon_texture.destroy_polygon();
 		text.destroy_text();
+	}
+
+	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
+			double x, y;
+			glfwGetCursorPos(window, &x, &y);
+			x = (x / (utils::resolution()[0] * 0.5f)) - 1;
+			y = (2.0 - (y / (utils::resolution()[1] * 0.5f))) - 1;
+			Simulation::polygon_simple.add_vertex(maths::vec3(x, y, 0.f));
+		}
 	}
 }
