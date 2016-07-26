@@ -1,38 +1,38 @@
 #include "polygon.hpp"
 
+// move non-gl stuff to constructor
+// give polygon class members to hold the data
+
 namespace graphics {
-	void Polygon::init_polygon(const std::vector<maths::vec3>& vertices, const std::vector<maths::vec2f>& uvs, const maths::vec3 position, const maths::vec3 scale) {
+	void Polygon::init_polygon() {
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
 
-		num_vertices = vertices.size();
 		glGenBuffers(1, &vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(
 			GL_ARRAY_BUFFER, 
 			300 * sizeof(maths::vec3),
 			&vertices[0],
-			GL_STATIC_DRAW
+			GL_DYNAMIC_DRAW
 		);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(0);
-
-
-		num_uvs = uvs.size();
-		if (num_uvs > 0) {
+;
+		if (!uvs.empty()) {
 			glGenBuffers(1, &uv_vbo);
 			glBindBuffer(GL_ARRAY_BUFFER, uv_vbo);
 			glBufferData(
 				GL_ARRAY_BUFFER,
-				num_uvs * sizeof(maths::vec2f),
+				uvs.size() * sizeof(maths::vec2f),
 				&uvs[0],
 				GL_STATIC_DRAW
 			);
 			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 			glEnableVertexAttribArray(1);
 
-			glGenTextures(1, &data);
-			glBindTexture(GL_TEXTURE_2D, data);
+			glGenTextures(1, &tex_data);
+			glBindTexture(GL_TEXTURE_2D, tex_data);
 
 			int width;
 			int height;
@@ -44,9 +44,9 @@ namespace graphics {
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 
-		shader = {
-			(num_uvs > 0) ? "vs_texture.glsl" : "vs_default.glsl",
-			(num_uvs > 0) ? "fs_texture.glsl" : "fs_default.glsl"
+		shader = { !uvs.empty() 
+			? "vs_texture.glsl", "fs_texture.glsl" 
+			: "vs_default.glsl", "fs_default.glsl"
 		};
 
 		glUniformMatrix4fv(
@@ -67,14 +67,14 @@ namespace graphics {
 	void Polygon::draw_polygon(GLenum mode) {
 		shader.use();
 
-		if (num_uvs > 0) {
+		if (!uvs.empty()) {
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, data);
+			glBindTexture(GL_TEXTURE_2D, tex_data);
 			glUniform1i(glGetUniformLocation(shader.program, "tex0"), 0);
 		}
 
 		glBindVertexArray(vao);
-		glDrawArrays(mode, 0, num_vertices);
+		glDrawArrays(mode, 0, vertices.size());
 		glBindVertexArray(0);
 	}
 
@@ -83,8 +83,8 @@ namespace graphics {
 		glDeleteBuffers(1, &vbo);
 		glDeleteVertexArrays(1, &vao);
 
-		if (num_uvs > 0)
-			glDeleteTextures(1, &data);
+		if (!uvs.empty())
+			glDeleteTextures(1, &tex_data);
 	}
 
 	void Polygon::add_vertex(const maths::vec3& v) {
@@ -92,11 +92,12 @@ namespace graphics {
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferSubData(
 			GL_ARRAY_BUFFER,
-			num_vertices * sizeof(maths::vec3),
+			vertices.size() * sizeof(maths::vec3),
 			sizeof(maths::vec3),
 			&v[0]
 		);
 		glBindVertexArray(0);
-		num_vertices++;
+
+		vertices.push_back(v);
 	}
 }

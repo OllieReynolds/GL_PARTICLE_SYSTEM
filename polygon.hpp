@@ -11,20 +11,32 @@
 namespace graphics {
 	class Polygon {
 	public:
-		void init_polygon(const std::vector<maths::vec3>& vertices, const std::vector<maths::vec2f>& uvs, const maths::vec3 position, const maths::vec3 scale);
+		Polygon(
+			const std::vector<maths::vec3>& vertices = {}, const std::vector<maths::vec2f>& uvs = {},
+			const maths::vec3 position = {}, const maths::vec3 scale = {}) :
+			vertices(vertices), uvs(uvs),
+			position(position), scale(scale) { }
+
+		void init_polygon();
 		void draw_polygon(GLenum mode);
 		void destroy_polygon();
 
 		void add_vertex(const maths::vec3& v);
 
 	private:
-		int num_vertices;
-		int num_uvs;
+
+		std::vector<maths::vec2f> uvs;
+		std::vector<maths::vec3> vertices;
+
+		maths::vec3 position;
+		maths::vec3 scale;
 
 		GLuint vao;
+		
 		GLuint vbo;
 		GLuint uv_vbo;
-		GLuint data;
+
+		GLuint tex_data;
 
 		utils::Shader shader;
 	};

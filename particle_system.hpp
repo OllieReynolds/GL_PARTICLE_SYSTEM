@@ -11,18 +11,25 @@
 namespace graphics {
 	class ParticleSystem {
 	public:
-		ParticleSystem() : agents(nullptr), agent_transform_matrices(nullptr), random_initiation(true), num_particles(256) { }
+		ParticleSystem(const std::vector<maths::vec3>& vertices = {}) :
+			vertices(vertices), agents(), transform_matrices(), random_initiation(true
+		) { 
+			for (int i = 0; i < 256; ++i) {
+				simulation::AutonomousAgent a;
+				agents.push_back(a);
+				transform_matrices.push_back(a.model_matrix);
+			}
+		}
 
-		void init_particle_system(const std::vector<maths::vec3>& vertices);
+		void init_particle_system();
 		void update_particle_system();
 		void draw_particle_system();
 		void destroy_particle_system();
 
-		int num_particles;
+		size_t size() { return agents.size(); }
 
 	private:
-		
-		bool random_initiation;
+		std::vector<maths::vec3> vertices;
 
 		GLuint vao;
 		GLuint position_vbo;
@@ -30,10 +37,9 @@ namespace graphics {
 
 		utils::Shader shader;
 
-		
-		simulation::AutonomousAgent* agents;
-		maths::mat4* agent_transform_matrices;
+		std::vector<simulation::AutonomousAgent> agents;
+		std::vector<maths::mat4> transform_matrices;
 
-		
+		bool random_initiation;
 	};
 }

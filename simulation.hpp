@@ -13,26 +13,26 @@
 
 namespace simulation {
 	enum state {
-		UPDATING,
+		READY,
 		PAUSED,
 		EDITING
 	};
 
 	class Simulation {
 	public:
+		Simulation();
+
 		void init_simulation();
 		void update_simulation(GLFWwindow* window);
 		void draw_simulation(const float fps);
 		void destroy_simulation();
 
-		friend void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-
-		static graphics::Polygon polygon_simple;
+		//friend void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 	private:
 		graphics::ParticleSystem particle_system;
 
-		
+		graphics::Polygon polygon_simple;
 		graphics::Polygon polygon_texture;
 		
 		graphics::Text text;

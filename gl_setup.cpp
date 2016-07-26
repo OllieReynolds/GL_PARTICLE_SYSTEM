@@ -19,7 +19,7 @@ namespace utils {
 		} else {
 			glfwMakeContextCurrent(window);
 			glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_FALSE);
-			glfwSetMouseButtonCallback(window, simulation::mouse_button_callback);
+			//glfwSetMouseButtonCallback(window, simulation::mouse_button_callback);
 		}
 
 		glewExperimental = GL_TRUE;

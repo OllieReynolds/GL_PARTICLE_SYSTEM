@@ -1,27 +1,17 @@
 #include "particle_system.hpp"
 
 namespace graphics {
-	void ParticleSystem::init_particle_system(const std::vector<maths::vec3>& vertices) {
-		delete[] agents;
-		delete[] agent_transform_matrices;
-
-		agents = new simulation::AutonomousAgent[num_particles];
-		agent_transform_matrices = new maths::mat4[num_particles];
-
+	void ParticleSystem::init_particle_system() {
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
 
 		glGenBuffers(1, &matrix_vbo);
-		for (int i = 0; i < num_particles; ++i) {
-			agents[i] = simulation::AutonomousAgent();
-			agent_transform_matrices[i] = agents[i].model_matrix;
-		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, matrix_vbo);
 		glBufferData(
 			GL_ARRAY_BUFFER, 
-			num_particles * sizeof(maths::mat4), 
-			agent_transform_matrices, 
+			agents.size() * sizeof(maths::mat4),
+			&transform_matrices[0], 
 			GL_DYNAMIC_DRAW
 		);
 
@@ -70,7 +60,7 @@ namespace graphics {
 		
 		const maths::vec2f wind = physics::calc_wind(wC);
 
-		for (int i = 0; i < num_particles; ++i) {
+		for (int i = 0; i < 256; ++i) {
 			agents[i].apply_force(physics::calc_drag(dC, agents[i].velocity));
 			agents[i].apply_force(physics::calc_gravity(gC, agents[i].mass));
 			agents[i].apply_force(wind);			
@@ -78,7 +68,7 @@ namespace graphics {
 
 			agents[i].update();
 
-			agent_transform_matrices[i] = agents[i].model_matrix;
+			transform_matrices[i] = agents[i].model_matrix;
 		}
 
 		glBindVertexArray(vao);
@@ -86,21 +76,18 @@ namespace graphics {
 		glBufferSubData(
 			GL_ARRAY_BUFFER,
 			0,
-			num_particles * sizeof(maths::mat4),
-			agent_transform_matrices
+			agents.size() * sizeof(maths::mat4),
+			&transform_matrices[0]
 		);
 	}
 
 	void ParticleSystem::draw_particle_system() {
 		glBindVertexArray(vao);
 		shader.use();
-		glDrawArraysInstanced(GL_TRIANGLES, 0, 3, num_particles);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 3, agents.size());
 	}
 
 	void ParticleSystem::destroy_particle_system() {
-		delete[] agents;
-		delete[] agent_transform_matrices;
-
 		glDeleteProgram(shader.program);
 		glDeleteBuffers(1, &position_vbo);
 		glDeleteBuffers(1, &matrix_vbo);

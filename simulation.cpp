@@ -1,113 +1,101 @@
 #include "simulation.hpp"
 
 namespace simulation {
-	graphics::Polygon Simulation::polygon_simple = {};
 
-	void Simulation::init_simulation() {
-		text.init_text(32.f);
-		
-		std::vector<maths::vec3> particle_system_instance_vertices = {
-			{0.0, 0.5, 0.0},
-		    {0.5, -0.5, 0.0},
-			{-0.5, -0.5, 0.0}
-	 	    
-		};
-		particle_system.init_particle_system(particle_system_instance_vertices);
+	Simulation::Simulation() {
+		polygon_simple = graphics::Polygon(
+			{  // Vertices
+			    {-1.f, -1.f, -1.f},
+				{ 1.f, -1.f, -1.f},
+				{ 0.f,  1.f, -1.f}
+			},
+			{  // 404 - UVs not found
+			
+			}, // Position & Scale 
+			{utils::resolution()[0] * 0.5f, utils::resolution()[1] * 0.5f, -1.f},
+			{utils::resolution()[0] * 0.3f, utils::resolution()[1] * 0.3f,  0.f}
+		);
 
-		std::vector<maths::vec3> polygon_vertices = {
-			{-1.f, -1.f, -1.f},
-			{ 1.f, -1.f, -1.f},
-			{ 0.f,  1.f, -1.f}
-		};
-		maths::vec3 polygon_position = {utils::resolution()[0] * 0.5f, utils::resolution()[1] * 0.5f, -1.f};
-		maths::vec3 polygon_scale = {utils::resolution()[0] * 0.3f, utils::resolution()[1] * 0.3f, 0.f};
-		polygon_simple.init_polygon(polygon_vertices, {}, polygon_position, polygon_scale);
-		
-		std::vector<maths::vec3> texture_vertices = {
-			{-0.5, -0.5, -1.0},
-		    { 0.5, -0.5, -1.0},
-		    { 0.5,  0.5, -1.0},
-			{ 0.5,  0.5, -1.0},
-			{-0.5,  0.5, -1.0},
-			{-0.5, -0.5, -1.0}
-		};
-		std::vector<maths::vec2f> texture_uvs = {
-			{0.0, 0.0},
-			{1.0, 0.0},
-			{1.0, 1.0},
-			{1.0, 1.0},
-			{0.0, 1.0},
-			{0.0, 0.0}
-		};
-		maths::vec3 texture_position = {300.f, 300.f, -1.f};
-		maths::vec3 texture_scale = {256.f, 256.f, 0.f};
-		polygon_texture.init_polygon(texture_vertices, texture_uvs, texture_position, texture_scale);
+		polygon_texture = graphics::Polygon(
+		    {  // Vertices
+				{-0.5, -0.5, -1.0},
+				{ 0.5, -0.5, -1.0},
+				{ 0.5,  0.5, -1.0},
+				{ 0.5,  0.5, -1.0},
+				{-0.5,  0.5, -1.0},
+				{-0.5, -0.5, -1.0}
+		    },
+			{  // UVs
+				{0.0, 0.0},
+				{1.0, 0.0},
+				{1.0, 1.0},
+				{1.0, 1.0},
+				{0.0, 1.0},
+				{0.0, 0.0}
+			}, // Position & Scale 
+			{300.f, 300.f, -1.f}, 
+			{256.f, 256.f,  0.f}
+		);
 
-		run_state = UPDATING;
+		particle_system = graphics::ParticleSystem(
+			{ // Vertices
+				{ 0.0,  0.5, 0.0},
+				{ 0.5, -0.5, 0.0},
+				{-0.5, -0.5, 0.0}
+			}
+		);
+
+		run_state = READY;
+	}
+
+	void Simulation::init_simulation() {		
+		polygon_simple.init_polygon();
+		polygon_texture.init_polygon();
+		particle_system.init_particle_system();
+		text.init_text(32.f);	
 	}
 
 	void Simulation::update_simulation(GLFWwindow* window) {
+		// Move this to the game dev stack exchange input link
 		if      (glfwGetKey(window, GLFW_KEY_P)) run_state = state::PAUSED;
-		else if (glfwGetKey(window, GLFW_KEY_U)) run_state = state::UPDATING;
 		else if (glfwGetKey(window, GLFW_KEY_E)) run_state = state::EDITING;
+		else if (glfwGetKey(window, GLFW_KEY_R)) run_state = state::READY;
 
-		switch (run_state) {
-		case UPDATING:
+		if (run_state == READY)
 			particle_system.update_particle_system();
-			break;
-
-		case PAUSED:
-			break;
-
-		case EDITING:
-			break;
-		}
 	}
 
 	void Simulation::draw_simulation(const float fps) {
+		particle_system.draw_particle_system();
+
+		polygon_simple.draw_polygon(GL_LINE_LOOP);
+		polygon_texture.draw_polygon(GL_TRIANGLES);
+
+		text.draw_text("FPS: " + std::to_string((int)fps), {0.f, 740.f});
+		text.draw_text("Particles: " + std::to_string(particle_system.size()), {0.f, 710.f});
+
 		switch (run_state) {
-		case UPDATING:
-			particle_system.draw_particle_system();
-			polygon_simple.draw_polygon(GL_LINE_LOOP);
-			polygon_texture.draw_polygon(GL_TRIANGLES);
-			text.draw_text("FPS: " + std::to_string((int)fps), {0.f, 740.f});
-			text.draw_text("Particles: " + std::to_string(particle_system.num_particles), {0.f, 710.f});
-			text.draw_text("State: UPDATING", {0.f, 680.f});
-			break;
-
-		case PAUSED:
-			particle_system.draw_particle_system();
-			polygon_simple.draw_polygon(GL_LINE_LOOP);
-			polygon_texture.draw_polygon(GL_TRIANGLES);
-			text.draw_text("FPS: " + std::to_string((int)fps), {0.f, 740.f});
-			text.draw_text("Particles: " + std::to_string(particle_system.num_particles), {0.f, 710.f});
-			text.draw_text("State: PAUSED", {0.f, 680.f});
-			break;
-
-		case EDITING:
-			polygon_simple.draw_polygon(GL_LINE_LOOP);
-			text.draw_text("FPS: " + std::to_string((int)fps), {0.f, 740.f});
-			text.draw_text("Particles: " + std::to_string(particle_system.num_particles), {0.f, 710.f});
-			text.draw_text("State: EDITING", {0.f, 680.f});
-			break;
+			case PAUSED:   text.draw_text("State: PAUSED", {0.f, 680.f}); break;
+			case EDITING:  text.draw_text("State: EDITING", {0.f, 680.f}); break;
+			case READY: text.draw_text("State: READY", {0.f, 680.f}); break;
 		}
-		
 	}
 
 	void Simulation::destroy_simulation() {
 		particle_system.destroy_particle_system();
+		
 		polygon_simple.destroy_polygon();
+		
 		polygon_texture.destroy_polygon();
+		
 		text.destroy_text();
 	}
 
-	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+	// http://gamedev.stackexchange.com/questions/71721/how-can-i-forward-glfws-keyboard-input-to-another-object
+	/*void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
 		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
 			double x, y;
 			glfwGetCursorPos(window, &x, &y);
-			x = (x / (utils::resolution()[0] * 0.5f)) - 1;
-			y = (2.0 - (y / (utils::resolution()[1] * 0.5f))) - 1;
-			Simulation::polygon_simple.add_vertex(maths::vec3(x, y, 0.f));
 		}
-	}
+	}*/
 }
