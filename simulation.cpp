@@ -38,7 +38,8 @@ namespace simulation {
 		);
 
 		particle_system = graphics::ParticleSystem(
-			{ // Vertices
+			30, 
+			{   // Vertices
 				{ 0.0,  0.5, 0.0},
 				{ 0.5, -0.5, 0.0},
 				{-0.5, -0.5, 0.0}
@@ -83,19 +84,13 @@ namespace simulation {
 
 	void Simulation::destroy_simulation() {
 		particle_system.destroy_particle_system();
-		
 		polygon_simple.destroy_polygon();
-		
 		polygon_texture.destroy_polygon();
-		
 		text.destroy_text();
 	}
 
-	// http://gamedev.stackexchange.com/questions/71721/how-can-i-forward-glfws-keyboard-input-to-another-object
-	/*void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
-			double x, y;
-			glfwGetCursorPos(window, &x, &y);
-		}
-	}*/
+	// Mouse position uses NDC
+	void Simulation::mouse_position(const maths::vec2f& position) {
+		mouse_coords = position;
+	}
 }

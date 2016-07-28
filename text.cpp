@@ -85,7 +85,7 @@ namespace graphics {
 		glUniform3fv(
 			glGetUniformLocation(shader.program, "colour"),
 			1,
-			&maths::vec3(1.f, 1.f, 0.f)[0]
+			&maths::vec3(0.533f, 0.733f, 0.84f)[0]
 		);
 	}
 

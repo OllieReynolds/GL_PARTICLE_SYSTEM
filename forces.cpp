@@ -11,8 +11,7 @@ namespace physics {
 	maths::vec2f calc_wind(
 		const float intensity
 	) {
-		float t = utils::elapsed_time<float>();
-		return maths::vec2f(cosf(t), sinf(t)) * intensity;
+		return maths::vec2f(0.5, 1.0) * intensity;
 	}
 
 	maths::vec2f calc_gravity(

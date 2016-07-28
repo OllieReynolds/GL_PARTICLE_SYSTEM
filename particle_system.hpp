@@ -8,13 +8,17 @@
 #include "shader.hpp"
 #include "autonomous_agent.hpp"
 
+
 namespace graphics {
 	class ParticleSystem {
 	public:
-		ParticleSystem(const std::vector<maths::vec3>& vertices = {}) :
-			vertices(vertices), agents(), transform_matrices(), random_initiation(true
-		) { 
-			for (int i = 0; i < 256; ++i) {
+		ParticleSystem(int num_particles = 10, const std::vector<maths::vec3>& vertices = {}) :
+			vertices(vertices), 
+			agents(), 
+			transform_matrices(), 
+			random_initiation(true)
+		{
+			for (int i = 0; i < num_particles; ++i) {
 				simulation::AutonomousAgent a;
 				agents.push_back(a);
 				transform_matrices.push_back(a.model_matrix);
@@ -22,6 +26,8 @@ namespace graphics {
 		}
 
 		void init_particle_system();
+
+		// Compute shader updating
 		void update_particle_system();
 		void draw_particle_system();
 		void destroy_particle_system();

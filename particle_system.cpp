@@ -6,7 +6,6 @@ namespace graphics {
 		glBindVertexArray(vao);
 
 		glGenBuffers(1, &matrix_vbo);
-
 		glBindBuffer(GL_ARRAY_BUFFER, matrix_vbo);
 		glBufferData(
 			GL_ARRAY_BUFFER, 
@@ -16,7 +15,7 @@ namespace graphics {
 		);
 
 		for (int i : {0, 1, 2, 3}) {
-		glVertexAttribPointer(
+			glVertexAttribPointer(
 				i, 
 				4, 
 				GL_FLOAT, 
@@ -53,21 +52,18 @@ namespace graphics {
 	}
 
 	void ParticleSystem::update_particle_system() {
-		static const float dC = 0.009f;
-		static const float fC = 0.1f;
-		static const float gC = 0.f;
-		static const float wC = 10.f;
-		
-		const maths::vec2f wind = physics::calc_wind(wC);
+		static const float drag_intensity = 0.009f;
+		static const float friction_intensity = 0.1f;
+		static const float gravity_intensity = 0.f;
+		static const float wind_intensity = 10.f;
 
-		for (int i = 0; i < 256; ++i) {
-			agents[i].apply_force(physics::calc_drag(dC, agents[i].velocity));
-			agents[i].apply_force(physics::calc_gravity(gC, agents[i].mass));
-			agents[i].apply_force(wind);			
-			//agents[i].apply_force(physics::calc_friction(fC, agents[i].velocity));
+		for (int i = 0; i < agents.size(); ++i) {
+			agents[i].apply_force(physics::calc_drag(drag_intensity, agents[i].velocity));
+			agents[i].apply_force(physics::calc_gravity(gravity_intensity, agents[i].mass));
+			agents[i].apply_force(physics::calc_wind(wind_intensity));
+			//agents[i].apply_force(physics::calc_friction(friction_intensity, agents[i].velocity));
 
 			agents[i].update();
-
 			transform_matrices[i] = agents[i].model_matrix;
 		}
 

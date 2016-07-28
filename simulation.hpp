@@ -27,9 +27,11 @@ namespace simulation {
 		void draw_simulation(const float fps);
 		void destroy_simulation();
 
-		//friend void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+		void mouse_position(const maths::vec2f& position);
 
 	private:
+		maths::vec2f mouse_coords;
+
 		graphics::ParticleSystem particle_system;
 
 		graphics::Polygon polygon_simple;
