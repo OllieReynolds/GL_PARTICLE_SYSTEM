@@ -5,8 +5,6 @@
 #include "vec3.hpp"
 #include "vec4.hpp"
 
-
-// Matrix interpolation? Effect of interpolating from ortho to perspective matrix?
 namespace maths {
 	class mat4 {
 	protected:
@@ -50,7 +48,7 @@ namespace maths {
 
 		// Add friends for projection_perspective
 		// View matrix?
-		friend mat4 orthogonal_perspective(float w, float h, float nZ, float fZ);
-		friend mat4 orthogonal_perspective(float l, float r, float t, float b, float nZ, float fZ);
+		friend mat4 orthographic_perspective(float w, float h, float nZ, float fZ);
+		friend mat4 orthographic_perspective(float l, float r, float t, float b, float nZ, float fZ);
 	};
 }

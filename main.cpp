@@ -42,6 +42,13 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 	//simulation->mouse_position(maths::vec2f(xpos, ypos));
 }
 
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	if (action == GLFW_PRESS) {
+		simulation::Simulation* simulation = reinterpret_cast<simulation::Simulation*>(glfwGetWindowUserPointer(window));
+		simulation->on_kb_press(key);
+	}
+}
+
 GLFWwindow* setup_opengl() {
 	if (!glfwInit()) {
 		std::cout << "GLFW failed to initialise" << std::endl;
@@ -61,7 +68,7 @@ GLFWwindow* setup_opengl() {
 		glfwMakeContextCurrent(window);
 	}
 
-	glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_FALSE);
+	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 
 	glewExperimental = GL_TRUE;

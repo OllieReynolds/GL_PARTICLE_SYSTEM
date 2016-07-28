@@ -46,23 +46,23 @@ namespace simulation {
 			}
 		);
 
-		run_state = READY;
+		text = graphics::Text(
+			32,
+		    {0.f, 680.f}
+		);
+
+		run_state = state::RUN;
 	}
 
 	void Simulation::init_simulation() {		
 		polygon_simple.init_polygon();
 		polygon_texture.init_polygon();
 		particle_system.init_particle_system();
-		text.init_text(32.f);	
+		text.init_text();	
 	}
 
 	void Simulation::update_simulation(GLFWwindow* window) {
-		// Move this to the game dev stack exchange input link
-		if      (glfwGetKey(window, GLFW_KEY_P)) run_state = state::PAUSED;
-		else if (glfwGetKey(window, GLFW_KEY_E)) run_state = state::EDITING;
-		else if (glfwGetKey(window, GLFW_KEY_R)) run_state = state::READY;
-
-		if (run_state == READY)
+		if (run_state == state::RUN)
 			particle_system.update_particle_system();
 	}
 
@@ -72,13 +72,16 @@ namespace simulation {
 		polygon_simple.draw_polygon(GL_LINE_LOOP);
 		polygon_texture.draw_polygon(GL_TRIANGLES);
 
-		text.draw_text("FPS: " + std::to_string((int)fps), {0.f, 740.f});
-		text.draw_text("Particles: " + std::to_string(particle_system.size()), {0.f, 710.f});
+		text.position = {0.f, 740.f};
+		text.draw_text("FPS: " + std::to_string((int)fps));
+		text.position = {0.f, 710.f};
+		text.draw_text("Particles: " + std::to_string(particle_system.size()));
 
+		text.position = {0.f, 680.f};
 		switch (run_state) {
-			case PAUSED:   text.draw_text("State: PAUSED", {0.f, 680.f}); break;
-			case EDITING:  text.draw_text("State: EDITING", {0.f, 680.f}); break;
-			case READY: text.draw_text("State: READY", {0.f, 680.f}); break;
+			case STOP: text.draw_text("State: STOP"); break;
+			case EDIT: text.draw_text("State: EDIT"); break;
+			case RUN:  text.draw_text("State: RUN"); break;
 		}
 	}
 
@@ -89,8 +92,16 @@ namespace simulation {
 		text.destroy_text();
 	}
 
-	// Mouse position uses NDC
+	// Mouse position uses Normalised Device Coords
 	void Simulation::mouse_position(const maths::vec2f& position) {
 		mouse_coords = position;
+	}
+
+	void Simulation::on_kb_press(int key) {
+		switch (key) {
+			case GLFW_KEY_S: run_state = state::STOP; break;
+			case GLFW_KEY_E: run_state = state::EDIT; break;
+			case GLFW_KEY_R: run_state = state::RUN;  break;
+		}
 	}
 }

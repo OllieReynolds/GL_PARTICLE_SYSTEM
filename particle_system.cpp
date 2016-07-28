@@ -47,7 +47,12 @@ namespace graphics {
 			glGetUniformLocation(shader.program, "proj"),
 			1,
 			GL_FALSE,
-			&maths::orthogonal_perspective(utils::resolution()[0], utils::resolution()[1], -1.f, 1.f)[0][0]
+			&maths::orthographic_perspective(
+				utils::resolution()[0],
+				utils::resolution()[1], 
+				-1.f, 
+				1.f
+			)[0][0]
 		);
 	}
 

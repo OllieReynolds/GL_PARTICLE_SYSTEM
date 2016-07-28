@@ -2,23 +2,23 @@
 
 namespace graphics {
 
-	void Text::init_text(int pixelSize) {
+	void Text::init_text() {
 		FT_Library ft;
-		if (FT_Init_FreeType(&ft))  {
+		if (FT_Init_FreeType(&ft)) {
 			std::cout << "Error initialising FreeType" << std::endl;
 		}
 
-		FT_Face face;
-		if (FT_New_Face(ft, "OpenSans-Regular.ttf", 0, &face)) {
+		FT_Face font_face;
+		if (FT_New_Face(ft, "OpenSans-Regular.ttf", 0, &font_face)) {
 			std::cout << "Error initialising font" << std::endl;
 		}
 
-		FT_Set_Pixel_Sizes(face, 0, pixelSize);
+		FT_Set_Pixel_Sizes(font_face, 0, pixel_size);
 
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 		for (GLubyte c = 0; c < 128; ++c) {
-			if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
+			if (FT_Load_Char(font_face, c, FT_LOAD_RENDER)) {
 				std::cout << "Error retrieving glyph: " << c << std::endl;
 			}
 
@@ -29,12 +29,12 @@ namespace graphics {
 				GL_TEXTURE_2D,
 				0,
 				GL_RED,
-				face->glyph->bitmap.width,
-				face->glyph->bitmap.rows,
+				font_face->glyph->bitmap.width,
+				font_face->glyph->bitmap.rows,
 				0,
 				GL_RED,
 				GL_UNSIGNED_BYTE,
-				face->glyph->bitmap.buffer
+				font_face->glyph->bitmap.buffer
 			);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -44,15 +44,15 @@ namespace graphics {
 
 			Glyph g = {
 				tex,
-				face->glyph->advance.x,
-				maths::vec2i(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-				maths::vec2i(face->glyph->bitmap_left, face->glyph->bitmap_top),
+				font_face->glyph->advance.x,
+				maths::vec2i(font_face->glyph->bitmap.width, font_face->glyph->bitmap.rows),
+				maths::vec2i(font_face->glyph->bitmap_left, font_face->glyph->bitmap_top),
 			};
 
 			glyph_map.insert(std::pair<GLchar, Glyph>(c, g));
 		}
 
-		FT_Done_Face(face);
+		FT_Done_Face(font_face);
 		FT_Done_FreeType(ft);
 
 		glGenVertexArrays(1, &vao);
@@ -74,7 +74,7 @@ namespace graphics {
 			glGetUniformLocation(shader.program, "proj"),
 			1,
 			GL_FALSE,
-			&maths::orthogonal_perspective(
+			&maths::orthographic_perspective(
 				utils::resolution()[0],
 				utils::resolution()[1],
 				-1.f,
@@ -89,14 +89,14 @@ namespace graphics {
 		);
 	}
 
-	void Text::draw_text(const std::string& msg, const maths::vec2f& pos) {
+	void Text::draw_text(const std::string& msg) {
 		shader.use();
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindVertexArray(vao);
 
-		float x = pos[0];
-		float y = pos[1];
+		float x = position[0];
+		float y = position[1];
 
 		std::string::const_iterator c;
 		for (c = msg.begin(); c != msg.end(); ++c) {

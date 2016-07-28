@@ -22,7 +22,6 @@ namespace maths {
 	}
 
 	mat4 rotate_x(const float f) {
-		//float rad = f * static_cast<float>(M_PI) / 180.f;
 		float rad = f * float{M_PI} / 180.f;
 		float c = cos(rad);
 		float s = sin(rad);
@@ -36,7 +35,7 @@ namespace maths {
 	}
 
 	mat4 rotate_y(const float f) {
-		float rad = f * static_cast<float>(M_PI) / 180.f;
+		float rad = f * float{M_PI} / 180.f;
 		float c = cos(rad);
 		float s = sin(rad);
 
@@ -49,7 +48,7 @@ namespace maths {
 	}
 
 	mat4 rotate_z(const float f) {
-		float rad = f * static_cast<float>(M_PI) / 180.f;
+		float rad = f * float{M_PI} / 180.f;
 		float c = cos(rad);
 		float s = sin(rad);
 
@@ -61,7 +60,7 @@ namespace maths {
 		);
 	}
 
-	mat4 orthogonal_perspective(float w, float h, float nZ, float fZ) {
+	mat4 orthographic_perspective(float w, float h, float nZ, float fZ) {
 		float z = fZ - nZ;
 		float i = -w / w;
 		float j = -h / h;
@@ -75,7 +74,7 @@ namespace maths {
 		);
 	}
 
-	mat4 orthogonal_perspective(float l, float r, float t, float b, float nZ, float fZ) {
+	mat4 orthographic_perspective(float l, float r, float t, float b, float nZ, float fZ) {
 		float w = r - l;
 		float h = t - b;
 		float z = fZ - nZ;

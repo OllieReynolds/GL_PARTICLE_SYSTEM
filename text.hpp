@@ -21,18 +21,23 @@ namespace graphics {
 
 	class Text {
 	public:
-		void init_text(int pixelSize);
-		void draw_text(const std::string& msg, const maths::vec2f& pos);
+		Text(int pixel_size = 24, maths::vec2f position = {}) : 
+			pixel_size(pixel_size),
+			position(position) { }
+
+		void init_text();
+		void draw_text(const std::string& msg);
 		void destroy_text();
 
+		maths::vec2f position;
 
 	private:
-
 		GLuint vao;
 		GLuint vbo;
 
 		utils::Shader shader;
 
+		int pixel_size;
 		std::map<GLchar, Glyph> glyph_map;
 	};
 }

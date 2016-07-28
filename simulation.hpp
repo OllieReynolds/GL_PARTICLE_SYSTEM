@@ -13,9 +13,9 @@
 
 namespace simulation {
 	enum state {
-		READY,
-		PAUSED,
-		EDITING
+		RUN,
+		STOP,
+		EDIT
 	};
 
 	class Simulation {
@@ -28,6 +28,7 @@ namespace simulation {
 		void destroy_simulation();
 
 		void mouse_position(const maths::vec2f& position);
+		void on_kb_press(int key);
 
 	private:
 		maths::vec2f mouse_coords;
