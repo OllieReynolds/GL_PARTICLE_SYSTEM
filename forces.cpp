@@ -30,12 +30,12 @@ namespace physics {
 
 	maths::vec2f calc_gravity(
 		const float intensity, 
-		const maths::vec2f& attractorPos, const float attractorMass,
-		const maths::vec2f& particlePos, const float particleMass
-	) {
-		maths::vec2f force = attractorPos - particlePos;
-		float dist = maths::magnitude_squared(force);
-		float m = (intensity * attractorMass * particleMass) / dist * dist;
-		return maths::normalise(force) * m;
+		const maths::vec2f& attractor_location, const float attractor_mass,
+		const maths::vec2f& particle_location, const float particle_mass) 
+	{
+		maths::vec2f force = attractor_location - particle_location;
+		float distance = magnitude_squared(force);
+		float m = (intensity * attractor_mass * particle_mass) / distance * distance;
+		return normalise(force) * m;
 	}
 }
