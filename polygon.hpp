@@ -20,7 +20,7 @@ namespace graphics {
 		void init_polygon();
 		void draw_polygon(GLenum mode);
 		void destroy_polygon();
-
+		
 		void add_vertex(const maths::vec3& v);
 
 	private:

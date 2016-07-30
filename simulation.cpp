@@ -38,7 +38,7 @@ namespace simulation {
 		);
 
 		particle_system = graphics::ParticleSystem(
-			30, 
+			2048, 
 			{   // Vertices
 				{ 0.0,  0.5, 0.0},
 				{ 0.5, -0.5, 0.0},
@@ -51,7 +51,7 @@ namespace simulation {
 		    {0.f, 680.f}
 		);
 
-		run_state = state::RUN;
+		run_state = state::STOP;
 	}
 
 	void Simulation::init_simulation() {		
@@ -62,7 +62,7 @@ namespace simulation {
 	}
 
 	void Simulation::update_simulation(GLFWwindow* window) {
-		if (run_state == state::RUN)
+	if (run_state == state::RUN)
 			particle_system.update_particle_system();
 	}
 

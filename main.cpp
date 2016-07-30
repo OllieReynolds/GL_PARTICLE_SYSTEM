@@ -1,8 +1,16 @@
+#ifdef _DEBUG
+#pragma comment(lib, "glew32.lib")
+#pragma comment(lib, "glfw3.lib")
+#pragma comment(lib, "opengl32.lib")
+#pragma comment(lib, "SOIL.lib")
+#pragma comment(lib, "freetype265MTd.lib")
+#else
 #pragma comment(lib, "glew32.lib")
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "SOIL.lib")
 #pragma comment(lib, "freetype265MT.lib")
+#endif
 
 #include "simulation.hpp"
 
@@ -22,7 +30,7 @@ int main() {
 
 	while (!glfwWindowShouldClose(window)) {
 		frame_start_time = utils::elapsed_time<float>();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 		simulation.update_simulation(window);
 		simulation.draw_simulation(frames_per_second);
 		glfwPollEvents();
@@ -59,7 +67,13 @@ GLFWwindow* setup_opengl() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(utils::resolution()[0], utils::resolution()[1], "Setting Up", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(
+		static_cast<int>(utils::resolution()[0]), 
+		static_cast<int>(utils::resolution()[1]),
+		"Setting Up", 
+		NULL, 
+		NULL
+	);
 	if (!window) {
 		std::cout << "GFLW failed to create window" << std::endl;
 		glfwTerminate();
@@ -84,7 +98,7 @@ GLFWwindow* setup_opengl() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glClearColor(0.314, 0.314, 0.314, 0.0);
+	glClearColor(0.314f, 0.314f, 0.314f, 0.0f);
 
 	std::stringstream ss;
 	ss << "Device Vendor: " << glGetString(GL_VENDOR) << std::endl;

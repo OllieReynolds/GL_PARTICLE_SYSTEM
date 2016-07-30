@@ -33,8 +33,9 @@ namespace physics {
 		const maths::vec2f& attractorPos, const float attractorMass,
 		const maths::vec2f& particlePos, const float particleMass
 	) {
-		maths::vec2f direction = maths::normalise(attractorPos - particlePos);
-
-		return maths::vec2f();
+		maths::vec2f force = attractorPos - particlePos;
+		float dist = maths::magnitude_squared(force);
+		float m = (intensity * attractorMass * particleMass) / dist * dist;
+		return maths::normalise(force) * m;
 	}
 }

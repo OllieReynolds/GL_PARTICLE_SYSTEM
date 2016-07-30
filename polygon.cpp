@@ -9,9 +9,9 @@ namespace graphics {
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(
 			GL_ARRAY_BUFFER, 
-			300 * sizeof(maths::vec3),
+			vertices.size() * sizeof(maths::vec3),
 			&vertices[0],
-			GL_DYNAMIC_DRAW
+			GL_STATIC_DRAW
 		);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(0);
@@ -51,8 +51,8 @@ namespace graphics {
 			1,
 			GL_FALSE,
 			&maths::orthographic_perspective(
-				utils::resolution()[0], 
-				utils::resolution()[1], 
+				utils::resolution()[0],
+				utils::resolution()[1],
 				-1.f, 
 				1.f
 			)[0][0]

@@ -13,7 +13,7 @@
 namespace graphics {
 	struct Glyph {
 		GLuint data;
-		GLuint next_glyph_offset;
+		FT_Pos next_glyph_offset;
 		
 		maths::vec2i glyph_size;
 		maths::vec2i bearing_offset;

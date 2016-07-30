@@ -57,15 +57,28 @@ namespace graphics {
 	}
 
 	void ParticleSystem::update_particle_system() {
-		static const float drag_intensity = 0.009f;
+		static const float drag_intensity = 0.09f;
 		static const float friction_intensity = 0.1f;
-		static const float gravity_intensity = 0.f;
+		static const float gravity_intensity = 0.4f;
 		static const float wind_intensity = 10.f;
 
-		for (int i = 0; i < agents.size(); ++i) {
-			agents[i].apply_force(physics::calc_drag(drag_intensity, agents[i].velocity));
-			agents[i].apply_force(physics::calc_gravity(gravity_intensity, agents[i].mass));
-			agents[i].apply_force(physics::calc_wind(wind_intensity));
+		for (size_t i = 0; i < agents.size(); ++i) {
+			
+			maths::vec2f force = physics::calc_gravity(
+				gravity_intensity,
+				{683, 384},
+				1.f,
+				{agents[i].translation[0], agents[i].translation[1]},
+				agents[i].mass
+			);
+
+			agents[i].apply_force(force);
+
+			
+
+			//agents[i].apply_force(physics::calc_drag(drag_intensity, agents[i].velocity));
+			//agents[i].apply_force(physics::calc_gravity(gravity_intensity, agents[i].mass));
+			//agents[i].apply_force(physics::calc_wind(wind_intensity));
 			//agents[i].apply_force(physics::calc_friction(friction_intensity, agents[i].velocity));
 
 			agents[i].update();

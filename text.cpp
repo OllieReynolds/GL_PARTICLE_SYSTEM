@@ -105,8 +105,8 @@ namespace graphics {
 			float xPos = x + g.bearing_offset[0];
 			float yPos = y - (g.glyph_size[1] - g.bearing_offset[1]);
 
-			float w = g.glyph_size[0];
-			float h = g.glyph_size[1];
+			int w = g.glyph_size[0];
+			int h = g.glyph_size[1];
 			float vertices[6][4] = {
 				{xPos,     yPos + h, 0.f, 0.f},
 				{xPos,     yPos,     0.f, 1.f},

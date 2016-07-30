@@ -4,9 +4,9 @@
 #include "utils.hpp"
 
 namespace utils {
-	inline static const maths::vec2i resolution() {
-		static maths::vec2i data = []()->maths::vec2i { 
-			int tmp[2];
+	inline static const maths::vec2f resolution() {
+		static maths::vec2f data = []()->maths::vec2f { 
+			float tmp[2];
 			utils::load_file("CONFIG.txt", tmp);
 			return {tmp[0], tmp[1]}; 
 		}();

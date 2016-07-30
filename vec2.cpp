@@ -29,12 +29,12 @@ namespace maths {
 
 	template<typename T>
 	vec2<T> operator + (const vec2<T>& v1, const vec2<T>& v2) {
-		return (v1[0] + v2[0], v1[1] + v2[1]);
+		return vec2<T>(v1[0] + v2[0], v1[1] + v2[1]);
 	}
 
 	template<typename T>
 	vec2<T> operator - (const vec2<T>& v1, const vec2<T>& v2) {
-		return (v1[0] - v2[0], v1[1] - v2[1]);
+		return vec2<T>(v1[0] - v2[0], v1[1] - v2[1]);
 	}
 
 	template<typename T, typename T1>
