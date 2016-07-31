@@ -33,7 +33,7 @@ namespace simulation {
 				{0.0, 1.0},
 				{0.0, 0.0}
 			}, // Position & Scale 
-			{300.f, 300.f, -1.f}, 
+			{300.f, 300.f, -0.f}, 
 			{256.f, 256.f,  0.f}
 		);
 
@@ -54,9 +54,9 @@ namespace simulation {
 		run_state = state::STOP;
 	}
 
-	void Simulation::init_simulation() {		
-		polygon_simple.init_polygon();
+	void Simulation::init_simulation() {	
 		polygon_texture.init_polygon();
+		polygon_simple.init_polygon();
 		particle_system.init_particle_system();
 		text.init_text();	
 	}
@@ -67,10 +67,11 @@ namespace simulation {
 	}
 
 	void Simulation::draw_simulation(const float fps) {
+		polygon_texture.draw_polygon(GL_TRIANGLES);
+		
 		particle_system.draw_particle_system();
 
 		polygon_simple.draw_polygon(GL_LINE_LOOP);
-		polygon_texture.draw_polygon(GL_TRIANGLES);
 
 		text.position = {0.f, 740.f};
 		text.draw_text("FPS: " + std::to_string((int)fps));
@@ -86,9 +87,9 @@ namespace simulation {
 	}
 
 	void Simulation::destroy_simulation() {
+		polygon_texture.destroy_polygon();
 		particle_system.destroy_particle_system();
 		polygon_simple.destroy_polygon();
-		polygon_texture.destroy_polygon();
 		text.destroy_text();
 	}
 

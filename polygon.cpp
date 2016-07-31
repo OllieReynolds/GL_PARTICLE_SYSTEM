@@ -33,18 +33,17 @@ namespace graphics {
 
 			int width;
 			int height;
-			unsigned char* image = SOIL_load_image("uv.jpg", &width, &height, 0, SOIL_LOAD_RGB);
+			unsigned char* image = SOIL_load_image("uv.jpg", &width, &height, 0, SOIL_LOAD_AUTO);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			SOIL_free_image_data(image);
 			glBindTexture(GL_TEXTURE_2D, 0);
-		}
 
-		shader = { !uvs.empty() 
-			? "vs_texture.glsl", "fs_texture.glsl" 
-			: "vs_default.glsl", "fs_default.glsl"
-		};
+			shader = utils::Shader("vs_texture.glsl", "fs_texture.glsl");
+		} else {
+			shader = utils::Shader("vs_default.glsl", "fs_default.glsl");
+		}
 
 		glUniformMatrix4fv(
 			glGetUniformLocation(shader.program, "proj"),

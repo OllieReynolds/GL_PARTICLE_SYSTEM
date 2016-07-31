@@ -24,7 +24,6 @@ namespace graphics {
 		void add_vertex(const maths::vec3& v);
 
 	private:
-
 		std::vector<maths::vec2f> uvs;
 		std::vector<maths::vec3> vertices;
 

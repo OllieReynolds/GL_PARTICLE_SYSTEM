@@ -30,7 +30,8 @@ int main() {
 
 	while (!glfwWindowShouldClose(window)) {
 		frame_start_time = utils::elapsed_time<float>();
-		glClear(GL_COLOR_BUFFER_BIT);
+		
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		simulation.update_simulation(window);
 		simulation.draw_simulation(frames_per_second);
 		glfwPollEvents();
@@ -78,13 +79,9 @@ GLFWwindow* setup_opengl() {
 		std::cout << "GFLW failed to create window" << std::endl;
 		glfwTerminate();
 		return NULL;
-	} else {
-		glfwMakeContextCurrent(window);
 	}
 
-	glfwSetKeyCallback(window, key_callback);
-	glfwSetCursorPosCallback(window, cursor_position_callback);
-
+	glfwMakeContextCurrent(window);
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (err != GLEW_OK) {
@@ -92,6 +89,11 @@ GLFWwindow* setup_opengl() {
 		std::cout << glewGetErrorString(err) << std::endl;
 		glfwTerminate();
 		return NULL;
+	}
+
+	GLenum err1 = GL_NO_ERROR;
+	while ((err1 = glGetError()) != GL_NO_ERROR) {
+		std::cout << err1 << std::endl;
 	}
 
 	//glEnable(GL_DEPTH_TEST);
@@ -106,6 +108,9 @@ GLFWwindow* setup_opengl() {
 	ss << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 	ss << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 	std::cout << ss.str();
+
+	glfwSetKeyCallback(window, key_callback);
+	glfwSetCursorPosCallback(window, cursor_position_callback);
 
 	return window;
 }
