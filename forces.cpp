@@ -7,7 +7,7 @@ namespace physics {
 
 	maths::vec2f calc_wind(
 		const float intensity) {
-		return maths::vec2f(0.5, 1.0) * intensity;
+		return maths::vec2f(-1.0, 0.f) * intensity;
 	}
 
 	maths::vec2f calc_gravity(const float intensity, const float mass) {

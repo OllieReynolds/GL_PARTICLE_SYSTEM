@@ -3,7 +3,6 @@
 #include <glew.h>
 #include <glfw3.h>
 
-#include "autonomous_agent.hpp"
 #include "forces.hpp"
 #include "particle_system.hpp"
 #include "polygon.hpp"
