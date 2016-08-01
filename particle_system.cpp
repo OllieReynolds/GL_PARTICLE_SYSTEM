@@ -7,17 +7,17 @@ namespace graphics {
 		static const float gravity_intensity = 0.1f;
 		static const float wind_intensity = 1.f;
 
-		for (size_t i = 0; i < agents.size(); ++i) {
-			apply_force(agents[i], 
+		for (size_t i = 0; i < particle_objects.size(); ++i) {
+			apply_force(particle_objects[i],
 				physics::calc_gravity(
 					gravity_intensity, 
 					{683, 384}, 1.f, 
-					{agents[i].translation[0], agents[i].translation[1]}, agents[i].mass
+					{particle_objects[i].position[0], particle_objects[i].position[1]}, particle_objects[i].mass
 				)
 			);
 
-			update_particle(agents[i]);
-			transform_matrices[i] = agents[i].model_matrix;
+			update_particle(particle_objects[i]);
+			particle_matrices[i].scale(particle_objects[i].scale).translate(particle_objects[i].position);
 		}
 
 		glBindVertexArray(vao);
@@ -25,8 +25,8 @@ namespace graphics {
 		glBufferSubData(
 			GL_ARRAY_BUFFER,
 			0,
-			agents.size() * sizeof(maths::mat4),
-			&transform_matrices[0]
+			particle_matrices.size() * sizeof(maths::mat4),
+			&particle_matrices[0]
 		);
 	}
 
@@ -39,8 +39,8 @@ namespace graphics {
 		glBindBuffer(GL_ARRAY_BUFFER, matrix_vbo);
 		glBufferData(
 			GL_ARRAY_BUFFER,
-			agents.size() * sizeof(maths::mat4),
-			&transform_matrices[0],
+			particle_matrices.size() * sizeof(maths::mat4),
+			&particle_matrices[0],
 			GL_DYNAMIC_DRAW
 		);
 
@@ -61,8 +61,8 @@ namespace graphics {
 		glBindBuffer(GL_ARRAY_BUFFER, position_vbo);
 		glBufferData(
 			GL_ARRAY_BUFFER,
-			vertices.size() * sizeof(maths::vec3),
-			&vertices[0],
+			particle_vertex_data.size() * sizeof(maths::vec3),
+			&particle_vertex_data[0],
 			GL_STATIC_DRAW
 		);
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -86,42 +86,34 @@ namespace graphics {
 		);
 	}
 
+	void ParticleSystem::constrain_particle(Particle& a) {
+		const maths::vec3 offset = a.scale * 0.5f;
 
-	void ParticleSystem::constrain_particle(AutonomousAgent& a) {
-		maths::vec3 offset = a.scale * 0.5f;
-
-		if (a.translation[0] > utils::resolution()[0] - offset[0]) {
-			a.translation[0] = utils::resolution()[0] - offset[0];
-			a.velocity[0] *= -1.f;
-		} else if (a.translation[0] < offset[0]) {
-			a.translation[0] = offset[0];
-			a.velocity[0] *= -1.f;
-		}
-
-		if (a.translation[1] > utils::resolution()[1] - offset[1]) {
-			a.translation[1] = utils::resolution()[1] - offset[1];
-			a.velocity[1] *= -1.f;
-		} else if (a.translation[1] < offset[1]) {
-			a.translation[1] = offset[1];
-			a.velocity[1] *= -1.f;
+		for (size_t xy : {0, 1}) {
+			if (a.position[xy] > utils::resolution()[xy] - offset[xy]) {
+				a.position[xy] = utils::resolution()[xy] - offset[xy];
+				a.velocity[xy] *= -1.f;
+			} else if (a.position[xy] < offset[xy]) {
+				a.position[xy] = offset[xy];
+				a.velocity[xy] *= -1.f;
+			}
 		}
 	}
 
-	void ParticleSystem::update_particle(AutonomousAgent& a) {
+	void ParticleSystem::update_particle(Particle& a) {
 		a.velocity += a.acceleration;
-		a.translation += maths::vec3(a.velocity[0], a.velocity[1], 0.f);
+		a.position += {a.velocity, 0.f};
 		constrain_particle(a);
-		a.acceleration = {0.f};
-		a.model_matrix.scale(a.scale).translate(a.translation);
+		a.acceleration = {0.f, 0.f};
 	}
-	void ParticleSystem::apply_force(AutonomousAgent& a, const maths::vec2f& force) {
+	void ParticleSystem::apply_force(Particle& a, const maths::vec2f& force) {
 		a.acceleration += force / a.mass;
 	}
 
 	void ParticleSystem::draw_particle_system() {
 		glBindVertexArray(vao);
 		shader.use();
-		glDrawArraysInstanced(GL_TRIANGLES, 0, 3, agents.size());
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 3, particle_objects.size());
 	}
 
 	void ParticleSystem::destroy_particle_system() {

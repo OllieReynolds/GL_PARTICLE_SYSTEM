@@ -9,6 +9,7 @@ namespace utils {
 	class Shader {
 	public:
 		Shader();
+		Shader(const char* computeSrc);
 		Shader(const char* vertexSrc, const char* fragmentSrc);
 
 		void use();
