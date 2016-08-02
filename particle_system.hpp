@@ -7,16 +7,21 @@
 #include "mat4.hpp"
 
 namespace graphics {
-	class Particle {
-	public:
+	struct Particle {
 		maths::vec3 position;
+		float padding0;
+
 		maths::vec3 rotation;
+		float padding1;
+
 		maths::vec3 scale;
+		float padding2;
 
 		maths::vec2f velocity;
 		maths::vec2f acceleration;
 
 		float mass;
+		maths::vec3 padding3;
 
 		Particle() :
 			position(utils::gen_random(0.f, static_cast<float>(utils::resolution()[0])), utils::gen_random(0.f, static_cast<float>(utils::resolution()[1])), 0.f),
@@ -58,7 +63,10 @@ namespace graphics {
 		GLuint position_vbo;
 		GLuint matrix_vbo;
 
-		utils::Shader shader;
+		GLuint particle_ssbo;
+
+		utils::Shader compute_shader;
+		utils::Shader render_shader;
 		
 		std::vector<Particle>    particle_objects;
 		std::vector<maths::mat4> particle_matrices;

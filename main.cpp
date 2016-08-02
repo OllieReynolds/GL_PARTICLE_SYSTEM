@@ -38,7 +38,7 @@ int main() {
 		glfwSwapBuffers(window);
 
 		frame_end_time = utils::elapsed_time<float>();
-		frames_per_second = 1.f / (frame_end_time - frame_start_time);
+		frames_per_second = 1.f / (frame_end_time - frame_start_time);	
 	}
 
 	simulation.destroy_simulation();

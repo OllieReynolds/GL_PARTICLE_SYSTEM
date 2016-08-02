@@ -1,35 +1,7 @@
 #include "particle_system.hpp"
 
 namespace graphics {
-	void ParticleSystem::update_particle_system() {
-		static const float drag_intensity = 0.09f;
-		static const float friction_intensity = 0.1f;
-		static const float gravity_intensity = 0.1f;
-		static const float wind_intensity = 1.f;
-
-		for (size_t i = 0; i < particle_objects.size(); ++i) {
-			apply_force(particle_objects[i],
-				physics::calc_gravity(
-					gravity_intensity, 
-					{683, 384}, 1.f, 
-					{particle_objects[i].position[0], particle_objects[i].position[1]}, particle_objects[i].mass
-				)
-			);
-
-			update_particle(particle_objects[i]);
-			particle_matrices[i].scale(particle_objects[i].scale).translate(particle_objects[i].position);
-		}
-
-		glBindVertexArray(vao);
-		glBindBuffer(GL_ARRAY_BUFFER, matrix_vbo);
-		glBufferSubData(
-			GL_ARRAY_BUFFER,
-			0,
-			particle_matrices.size() * sizeof(maths::mat4),
-			&particle_matrices[0]
-		);
-	}
-
+	static const int WORK_GROUP_SIZE = 128;
 
 	void ParticleSystem::init_particle_system() {
 		glGenVertexArrays(1, &vao);
@@ -68,13 +40,18 @@ namespace graphics {
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		glEnableVertexAttribArray(4);
 
-		shader = utils::Shader(
+		glGenBuffers(1, &particle_ssbo);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, particle_ssbo);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, particle_objects.size() * sizeof(Particle), &particle_objects[0], GL_STATIC_DRAW);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
+
+		render_shader = {
 			"vs_instanced.glsl",
 			"fs_instanced.glsl"
-		);
+		};
 
 		glUniformMatrix4fv(
-			glGetUniformLocation(shader.program, "proj"),
+			glGetUniformLocation(render_shader.program, "proj"),
 			1,
 			GL_FALSE,
 			&maths::orthographic_perspective(
@@ -83,6 +60,51 @@ namespace graphics {
 				-1.f,
 				1.f
 			)[0][0]
+		);
+
+		compute_shader = {
+			"cs_particle_physics.glsl"
+		};
+	}
+
+	void ParticleSystem::update_particle_system() {
+		static const float drag_intensity = 0.09f;
+		static const float friction_intensity = 0.1f;
+		static const float gravity_intensity = 0.1f;
+		static const float wind_intensity = 1.f;
+		
+		glBindVertexArray(vao);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
+		compute_shader.use();
+		glDispatchCompute(WORK_GROUP_SIZE, 1, 1);
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+		// TODO:
+		// Potential issue: data gets edited after the compute shader, but 
+		// compute shader never receives updated data. It is constantly using
+		// its first set of data. Update ssbo with new data each update call.
+
+		Particle* ptr;
+		ptr = (Particle*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+		particle_objects.clear();
+		for (int i = 0; i < 2048; ++i) {
+			particle_objects.push_back(ptr[i]);
+		}
+		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+
+
+		for (size_t i = 0; i < particle_objects.size(); ++i) {
+			update_particle(particle_objects[i]);
+			particle_matrices[i].scale(particle_objects[i].scale).translate(particle_objects[i].position);
+		}
+
+		//glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, matrix_vbo);
+		glBufferSubData(
+			GL_ARRAY_BUFFER,
+			0,
+			particle_matrices.size() * sizeof(maths::mat4),
+			&particle_matrices[0]
 		);
 	}
 
@@ -106,18 +128,21 @@ namespace graphics {
 		constrain_particle(a);
 		a.acceleration = {0.f, 0.f};
 	}
+
 	void ParticleSystem::apply_force(Particle& a, const maths::vec2f& force) {
 		a.acceleration += force / a.mass;
 	}
 
 	void ParticleSystem::draw_particle_system() {
 		glBindVertexArray(vao);
-		shader.use();
+		render_shader.use();
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 3, particle_objects.size());
 	}
 
 	void ParticleSystem::destroy_particle_system() {
-		glDeleteProgram(shader.program);
+		glDeleteProgram(compute_shader.program);
+		glDeleteProgram(render_shader.program);
+		glDeleteBuffers(1, &particle_ssbo);
 		glDeleteBuffers(1, &position_vbo);
 		glDeleteBuffers(1, &matrix_vbo);
 		glDeleteVertexArrays(1, &vao);

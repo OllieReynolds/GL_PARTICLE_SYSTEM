@@ -15,7 +15,12 @@ namespace maths {
 
 		vec3& operator  = (const vec3& v) { n[0] = v[0]; n[1] = v[1]; n[2] = v[2]; return *this; }
 
-		vec3& operator += (const vec3& v) { n[0] += v[0]; n[1] += v[1]; n[2] += v[2]; return *this; }
+		vec3& operator += (const vec3& v) { 
+			n[0] += v[0]; 
+			n[1] += v[1]; 
+			n[2] += v[2]; 
+			return *this; 
+		}
 		vec3& operator -= (const vec3& v) { n[0] -= v[0]; n[1] -= v[1]; n[2] -= v[2]; return *this; }
 
 		float& operator [] (int i) { return n[i]; }
