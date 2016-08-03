@@ -67,16 +67,12 @@ namespace graphics {
 		};
 	}
 
-	void ParticleSystem::update_particle_system() {
-		static const float drag_intensity = 0.09f;
-		static const float friction_intensity = 0.1f;
-		static const float gravity_intensity = 0.1f;
-		static const float wind_intensity = 1.f;
-		
+	void ParticleSystem::update_particle_system() {		
 		glBindVertexArray(vao);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
 		compute_shader.use();
 		glDispatchCompute(WORK_GROUP_SIZE, 1, 1);
+		
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 		// TODO:
@@ -92,14 +88,13 @@ namespace graphics {
 		}
 		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 
-
 		for (size_t i = 0; i < particle_objects.size(); ++i) {
-			update_particle(particle_objects[i]);
+			//update_particle(particle_objects[i]);
 			particle_matrices[i].scale(particle_objects[i].scale).translate(particle_objects[i].position);
 		}
 
-		//glBindVertexArray(vao);
 		glBindBuffer(GL_ARRAY_BUFFER, matrix_vbo);
+		
 		glBufferSubData(
 			GL_ARRAY_BUFFER,
 			0,
@@ -108,30 +103,30 @@ namespace graphics {
 		);
 	}
 
-	void ParticleSystem::constrain_particle(Particle& a) {
-		const maths::vec3 offset = a.scale * 0.5f;
+	//void ParticleSystem::constrain_particle(Particle& a) {
+	//	const maths::vec3 offset = a.scale * 0.5f;
 
-		for (size_t xy : {0, 1}) {
-			if (a.position[xy] > utils::resolution()[xy] - offset[xy]) {
-				a.position[xy] = utils::resolution()[xy] - offset[xy];
-				a.velocity[xy] *= -1.f;
-			} else if (a.position[xy] < offset[xy]) {
-				a.position[xy] = offset[xy];
-				a.velocity[xy] *= -1.f;
-			}
-		}
-	}
+	//	for (size_t xy : {0, 1}) {
+	//		if (a.position[xy] > utils::resolution()[xy] - offset[xy]) {
+	//			a.position[xy] = utils::resolution()[xy] - offset[xy];
+	//			a.velocity[xy] *= -1.f;
+	//		} else if (a.position[xy] < offset[xy]) {
+	//			a.position[xy] = offset[xy];
+	//			a.velocity[xy] *= -1.f;
+	//		}
+	//	}
+	//}
 
-	void ParticleSystem::update_particle(Particle& a) {
-		a.velocity += a.acceleration;
-		a.position += {a.velocity, 0.f};
-		constrain_particle(a);
-		a.acceleration = {0.f, 0.f};
-	}
+	//void ParticleSystem::update_particle(Particle& a) {
+	//	//a.velocity += a.acceleration;
+	//	//a.position += {a.velocity, 0.f};
+	//	//constrain_particle(a);
+	//	//a.acceleration = {0.f, 0.f};
+	//}
 
-	void ParticleSystem::apply_force(Particle& a, const maths::vec2f& force) {
-		a.acceleration += force / a.mass;
-	}
+	//void ParticleSystem::apply_force(Particle& a, const maths::vec2f& force) {
+	//	a.acceleration += force / a.mass;
+	//}
 
 	void ParticleSystem::draw_particle_system() {
 		glBindVertexArray(vao);
