@@ -45,9 +45,6 @@ namespace maths {
 		friend mat4 rotate_y(const float f);
 		friend mat4 rotate_z(const float f);
 
-
-		// Add friends for projection_perspective
-		// View matrix?
 		friend mat4 orthographic_perspective(float w, float h, float nZ, float fZ);
 		friend mat4 orthographic_perspective(float l, float r, float t, float b, float nZ, float fZ);
 	};

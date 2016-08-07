@@ -11,24 +11,17 @@ namespace graphics {
 		maths::vec3 position;
 		float padding0;
 
-		maths::vec3 rotation;
+		maths::vec3 scale;
 		float padding1;
 
-		maths::vec3 scale;
-		float padding2;
-
 		maths::vec2f velocity;
-		maths::vec2f acceleration;
-
 		float mass;
-		maths::vec3 padding3;
+		float padding2;
 
 		Particle() :
 			position(utils::gen_random(0.f, static_cast<float>(utils::resolution()[0])), utils::gen_random(0.f, static_cast<float>(utils::resolution()[1])), 0.f),
-			rotation(0.f),
 			scale(maths::vec3(utils::gen_random(2.f, 32.f))),
 			velocity(0.f),
-			acceleration(0.f),
 			mass(scale[0]) 
 		{ }
 	};
@@ -55,7 +48,7 @@ namespace graphics {
 
 	private:
 		GLuint vao;
-		GLuint position_vbo;
+		GLuint vertex_vbo;
 		GLuint matrix_vbo;
 
 		GLuint particle_ssbo;

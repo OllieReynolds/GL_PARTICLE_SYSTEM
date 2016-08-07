@@ -73,16 +73,16 @@ namespace {
 		// GL Config
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glClearColor(0.314f, 0.314f, 0.314f, 0.0f);
+		glClearColor(0.f, 0.f, 0.f, 0.f);
 	
 		return {
 			setup_result::SUCCESS,
 			[]() -> std::string {
 				std::stringstream ss;
-				ss << "Device Vendor: " << glGetString(GL_VENDOR) << std::endl;
-				ss << "Device Renderer: " << glGetString(GL_RENDERER) << std::endl;
-				ss << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-				ss << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+				ss << "Device Vendor: "   << glGetString(GL_VENDOR)                   << std::endl;
+				ss << "Device Renderer: " << glGetString(GL_RENDERER)                 << std::endl;
+				ss << "OpenGL Version: "  << glGetString(GL_VERSION)                  << std::endl;
+				ss << "GLSL Version: "    << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 				return ss.str();
 			}(),
 			window
