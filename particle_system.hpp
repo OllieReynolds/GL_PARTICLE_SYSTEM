@@ -54,11 +54,6 @@ namespace graphics {
 		size_t size() { return particle_objects.size(); }
 
 	private:
-		// Compute shader updating?
-		void constrain_particle(Particle& a);
-		void update_particle(Particle& a);
-		void apply_force(Particle& a, const maths::vec2f& force);
-
 		GLuint vao;
 		GLuint position_vbo;
 		GLuint matrix_vbo;

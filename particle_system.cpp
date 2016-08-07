@@ -1,8 +1,6 @@
 #include "particle_system.hpp"
 
 namespace graphics {
-	static const int WORK_GROUP_SIZE = 128;
-
 	void ParticleSystem::init_particle_system() {
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
@@ -69,32 +67,18 @@ namespace graphics {
 
 	void ParticleSystem::update_particle_system() {		
 		glBindVertexArray(vao);
+
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
 		compute_shader.use();
-		glDispatchCompute(WORK_GROUP_SIZE, 1, 1);
-		
+		glDispatchCompute(256, 1, 1);
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-		// TODO:
-		// Potential issue: data gets edited after the compute shader, but 
-		// compute shader never receives updated data. It is constantly using
-		// its first set of data. Update ssbo with new data each update call.
-
-		Particle* ptr;
-		ptr = (Particle*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
-		particle_objects.clear();
-		for (int i = 0; i < 2048; ++i) {
-			particle_objects.push_back(ptr[i]);
-		}
+		Particle* ptr = (Particle*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+		for (size_t i = 0; i < 65536; ++i)
+			particle_matrices[i].scale(ptr[i].scale).translate(ptr[i].position);
 		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 
-		for (size_t i = 0; i < particle_objects.size(); ++i) {
-			//update_particle(particle_objects[i]);
-			particle_matrices[i].scale(particle_objects[i].scale).translate(particle_objects[i].position);
-		}
-
 		glBindBuffer(GL_ARRAY_BUFFER, matrix_vbo);
-		
 		glBufferSubData(
 			GL_ARRAY_BUFFER,
 			0,
@@ -102,31 +86,6 @@ namespace graphics {
 			&particle_matrices[0]
 		);
 	}
-
-	//void ParticleSystem::constrain_particle(Particle& a) {
-	//	const maths::vec3 offset = a.scale * 0.5f;
-
-	//	for (size_t xy : {0, 1}) {
-	//		if (a.position[xy] > utils::resolution()[xy] - offset[xy]) {
-	//			a.position[xy] = utils::resolution()[xy] - offset[xy];
-	//			a.velocity[xy] *= -1.f;
-	//		} else if (a.position[xy] < offset[xy]) {
-	//			a.position[xy] = offset[xy];
-	//			a.velocity[xy] *= -1.f;
-	//		}
-	//	}
-	//}
-
-	//void ParticleSystem::update_particle(Particle& a) {
-	//	//a.velocity += a.acceleration;
-	//	//a.position += {a.velocity, 0.f};
-	//	//constrain_particle(a);
-	//	//a.acceleration = {0.f, 0.f};
-	//}
-
-	//void ParticleSystem::apply_force(Particle& a, const maths::vec2f& force) {
-	//	a.acceleration += force / a.mass;
-	//}
 
 	void ParticleSystem::draw_particle_system() {
 		glBindVertexArray(vao);
