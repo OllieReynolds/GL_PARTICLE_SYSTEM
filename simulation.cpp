@@ -45,6 +45,7 @@ namespace simulation {
 				{-0.5, -0.5, 0.0}
 			}
 		);
+		std::cout << particle_system.print_compute_shader_info() << std::endl;
 
 		text = graphics::Text(
 			32,

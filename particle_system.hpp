@@ -18,11 +18,14 @@ namespace graphics {
 		float mass;
 		float padding2;
 
+		//maths::mat4 model;
+
 		Particle() :
 			position(utils::gen_random(0.f, static_cast<float>(utils::resolution()[0])), utils::gen_random(0.f, static_cast<float>(utils::resolution()[1])), 0.f),
 			scale(maths::vec3(utils::gen_random(2.f, 32.f))),
 			velocity(0.f),
-			mass(scale[0]) 
+			mass(scale[0])
+			//model()
 		{ }
 	};
 
@@ -30,7 +33,7 @@ namespace graphics {
 	public:
 		ParticleSystem(int num_particles = 10, const std::vector<maths::vec3>& vertices = {}) :
 			particle_vertex_data(vertices),
-			particle_objects(), 
+			particle_objects(),
 			particle_matrices()
 		{
 			for (int i = 0; i < num_particles; ++i) {
@@ -44,14 +47,17 @@ namespace graphics {
 		void draw_particle_system();
 		void destroy_particle_system();
 
+		std::string print_compute_shader_info();
+
 		size_t size() { return particle_objects.size(); }
 
 	private:
 		GLuint vao;
 		GLuint vertex_vbo;
-		GLuint matrix_vbo;
+		//GLuint matrix_vbo;
 
 		GLuint particle_ssbo;
+		GLuint matrix_ssbo;
 
 		utils::Shader compute_shader;
 		utils::Shader render_shader;
