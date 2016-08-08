@@ -12,6 +12,8 @@
 	#pragma comment(lib, "freetype265MT.lib")
 #endif
 
+#include <functional>
+
 #include "simulation.hpp"
 
 namespace {
@@ -88,6 +90,10 @@ namespace {
 			window
 		};
 	}
+
+	bool check_running(GLFWwindow* window, int duration) {
+		return !glfwWindowShouldClose(window) && utils::elapsed_time<float>() < duration;
+	}
 }
 
 int main() {
@@ -105,19 +111,19 @@ int main() {
 	float frame_start_time = utils::elapsed_time<float>();
 
 	// Run
-	while (!glfwWindowShouldClose(status.window)) {
+	while (check_running(status.window, 300)) {
 		{ // Per-frame updating and drawing here
-			frame_start_time = utils::elapsed_time<float>();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			simulation.update_simulation(status.window);
 			simulation.draw_simulation(frames_per_second);
 			glfwPollEvents();
 			glfwSwapBuffers(status.window);
-			frame_end_time = utils::elapsed_time<float>();
 		}
 
 		{ // Frame metrics and logging here
+			frame_end_time = utils::elapsed_time<float>();
 			frames_per_second = 1.f / (frame_end_time - frame_start_time);
+			frame_start_time = utils::elapsed_time<float>();
 		}
 	}
 

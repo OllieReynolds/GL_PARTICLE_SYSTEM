@@ -20,27 +20,30 @@ layout(local_size_x = 128) in;
 
 void check_boundaries(uint gid) {
 	vec3 offset = particles[gid].scale * 0.5;
-	if (particles[gid].position.x > 1366.0 - offset.x) {
-	particles[gid].position.x = 1366.0 - offset.x;
-	particles[gid].velocity.x *= -1.0;
+	float t = 768.0 - offset.y;
+	float r = 1366.0 - offset.x;
+
+	if (particles[gid].position.x > r) {
+		particles[gid].position.x = r;
+		particles[gid].velocity.x *= -1.0;
 	}
 	else if (particles[gid].position.x < offset.x) {
-	particles[gid].position.x = offset.x;
-	particles[gid].velocity.x *= -1.0;
+		particles[gid].position.x = offset.x;
+		particles[gid].velocity.x *= -1.0;
 	}
 
-	if (particles[gid].position.y > 768.0 - offset.y) {
-	particles[gid].position.y = 768.0 - offset.y;
-	particles[gid].velocity.y *= -1.0;
+	if (particles[gid].position.y > t) {
+		particles[gid].position.y = t;
+		particles[gid].velocity.y *= -1.0;
 	}
 	else if (particles[gid].position.y < offset.y) {
-	particles[gid].position.y = offset.y;
-	particles[gid].velocity.y *= -1.0;
+		particles[gid].position.y = offset.y;
+		particles[gid].velocity.y *= -1.0;
 	}
 }
 
 vec2 calculate_gravity(uint gid) {
-	const float intensity = 0.01;
+	const float intensity = 0.05;
 	const float attractor_mass = 1.0;
 	const vec2 attractor_location = vec2(683.0, 384.0);
 
@@ -70,26 +73,3 @@ void main() {
 		vec4(particles[gid].position.x, particles[gid].position.y, 0.0, 1.0)
 	);
 }
-
-//////////////////////////////////////////////////////////////
-// Boundary Collisions
-//////////////////////////////////////////////////////////////
-/*vec3 offset = particles[gid].scale * 0.5;
-if (particles[gid].position.x > 1366.0 - offset.x) {
-particles[gid].position.x = 1366.0 - offset.x;
-particles[gid].velocity.x *= -1.0;
-}
-else if (particles[gid].position.x < offset.x) {
-particles[gid].position.x = offset.x;
-particles[gid].velocity.x *= -1.0;
-}
-
-if (particles[gid].position.y > 768.0 - offset.y) {
-particles[gid].position.y = 768.0 - offset.y;
-particles[gid].velocity.y *= -1.0;
-}
-else if (particles[gid].position.y < offset.y) {
-particles[gid].position.y = offset.y;
-particles[gid].velocity.y *= -1.0;
-}*/
-//////////////////////////////////////////////////////////////
