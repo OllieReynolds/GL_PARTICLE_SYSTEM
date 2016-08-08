@@ -8,24 +8,19 @@
 
 namespace graphics {
 	struct Particle {
-		maths::vec3 position;
-		float padding0;
-
-		maths::vec3 scale;
-		float padding1;
-
+		maths::vec2f position;
 		maths::vec2f velocity;
+		float scale;
 		float mass;
-		float padding2;
-
-		//maths::mat4 model;
 
 		Particle() :
-			position(utils::gen_random(0.f, static_cast<float>(utils::resolution()[0])), utils::gen_random(0.f, static_cast<float>(utils::resolution()[1])), 0.f),
-			scale(maths::vec3(utils::gen_random(2.f, 32.f))),
-			velocity(0.f),
-			mass(scale[0])
-			//model()
+			position(
+				utils::gen_random(0.f, static_cast<float>(utils::resolution()[0])), 
+				utils::gen_random(0.f, static_cast<float>(utils::resolution()[1]))
+			),
+			scale(utils::gen_random(2.f, 32.f)),
+			mass(scale),
+			velocity(0.f)
 		{ }
 	};
 

@@ -1,9 +1,9 @@
 ﻿#version 450
 
 struct Particle {
-	vec3 position;
-	vec3 scale;
+	vec2 position;
 	vec2 velocity;
+	float scale;
 	float mass;
 };
 

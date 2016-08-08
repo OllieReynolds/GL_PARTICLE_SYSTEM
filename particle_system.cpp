@@ -5,7 +5,7 @@ namespace graphics {
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
 
-		{ // Matrix VBO
+		{ // Matrix SSBO
 			glGenBuffers(1, &matrix_ssbo);
 			glBindBuffer(GL_ARRAY_BUFFER, matrix_ssbo);
 			glBufferData(
@@ -15,12 +15,6 @@ namespace graphics {
 				GL_DYNAMIC_DRAW
 			);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, matrix_ssbo);
-
-			/*for (int i : {0, 1, 2, 3}) {
-				glVertexAttribPointer(i, 4, GL_FLOAT, GL_FALSE, sizeof(maths::mat4), (GLvoid*)(sizeof(maths::vec4) * i));
-				glEnableVertexAttribArray(i);
-				glVertexAttribDivisor(i, 1);
-			}*/
 		}
 		
 
