@@ -12,8 +12,6 @@
 	#pragma comment(lib, "freetype265MT.lib")
 #endif
 
-#include <functional>
-
 #include "simulation.hpp"
 
 namespace {
@@ -110,7 +108,7 @@ int main() {
 	float frame_end_time, frames_per_second = 0.f;
 	float frame_start_time = utils::elapsed_time<float>();
 
-	// Run
+	// Run until Esc. pressed or N seconds elapsed
 	while (check_running(status.window, 300)) {
 		{ // Per-frame updating and drawing here
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -9,7 +9,7 @@ namespace graphics {
 		}
 
 		FT_Face font_face;
-		if (FT_New_Face(ft, "OpenSans-Regular.ttf", 0, &font_face)) {
+		if (FT_New_Face(ft, "DS-DIGI.ttf", 0, &font_face)) {
 			std::cout << "Error initialising font" << std::endl;
 		}
 

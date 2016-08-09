@@ -18,7 +18,7 @@ namespace graphics {
 				utils::gen_random(0.f, static_cast<float>(utils::resolution()[0])), 
 				utils::gen_random(0.f, static_cast<float>(utils::resolution()[1]))
 			),
-			scale(utils::gen_random(2.f, 32.f)),
+			scale(utils::gen_random(2.f, 22.f)),
 			mass(scale),
 			velocity(0.f)
 		{ }

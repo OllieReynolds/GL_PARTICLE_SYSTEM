@@ -64,7 +64,7 @@ void main() {
 	uint gid = gl_GlobalInvocationID.x;
 
 	apply_forces(gid);
-	check_boundaries(gid);
+	//check_boundaries(gid);
 
 	particle_matrices[gid] = mat4(
 		vec4(particles[gid].scale, 0.0, 0.0, 0.0),
