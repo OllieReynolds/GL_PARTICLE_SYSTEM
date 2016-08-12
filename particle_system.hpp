@@ -8,8 +8,10 @@ namespace graphics {
 	struct Particle {
 		Particle() : 
 			position(utils::gen_random(0.f, utils::resolution[0]), utils::gen_random(0.f, utils::resolution[1])),
-			scale(utils::gen_random(2.f, 22.f)), mass(scale), velocity(0.f) 
-		{ 
+			velocity(0.f),
+			scale(utils::gen_random(2.f, 22.f)), 
+			mass(scale)
+		{  
 		}
 
 		maths::vec2f position;
@@ -18,12 +20,17 @@ namespace graphics {
 		float mass;
 	};
 
+
 	class ParticleSystem {
 	public:
-		ParticleSystem(int num_particles = 10, const std::vector<maths::vec3>& vertices = {});
+		ParticleSystem(int num_particles) : particles() 
+		{
+			for (int i = 0; i < num_particles; ++i) {
+				particles.push_back(Particle());
+			}
+		}
 
 		void init_particle_system();
-		void update_particle_system();
 		void draw_particle_system();
 		void destroy_particle_system();
 
@@ -32,15 +39,11 @@ namespace graphics {
 
 	private:
 		GLuint vao;
-		GLuint vertex_vbo;
 		GLuint particle_ssbo;
-		GLuint matrix_ssbo;
 
 		utils::Shader compute_shader;
 		utils::Shader render_shader;
 		
-		std::vector<Particle>    particle_objects;
-		std::vector<maths::mat4> particle_matrices;
-		std::vector<maths::vec3> particle_vertex_data;
+		std::vector<Particle> particles;
 	};
 }

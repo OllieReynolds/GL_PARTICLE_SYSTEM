@@ -61,7 +61,7 @@ namespace simulation {
 
 	void Simulation::update_simulation(GLFWwindow* window) {
 		//if (run_state == state::RUN)
-			particle_system.update_particle_system();
+			//particle_system.update_particle_system();
 	}
 
 	void Simulation::draw_simulation(const float fps) {

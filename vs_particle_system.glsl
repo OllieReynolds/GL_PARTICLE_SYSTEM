@@ -5,12 +5,9 @@ layout(location = 1) in vec2 velocity;
 layout(location = 2) in float scale;
 layout(location = 3) in float mass;
 
-out float out_colour;
-
-uniform mat4 proj;
+out float vertex_colour;
 
 void main() {
-	int id = gl_InstanceID;
-	gl_Position = proj * particle_matrices[id] * vec4(vp, 0.0, 1.0);
-	out_colour = length(particles[id].velocity);
+	gl_Position = vec4(vp, 0.0, 1.0);
+	vertex_colour = length(velocity);
 };

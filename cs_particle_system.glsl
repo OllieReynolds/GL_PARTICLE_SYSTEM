@@ -12,10 +12,6 @@ layout(std430, binding = 0) buffer Particles {
 	Particle particles[];
 };
 
-layout(std430, binding = 1) buffer ParticleMatrices {
-	mat4 particle_matrices[];
-};
-
 layout(local_size_x = 128) in;
 
 void check_boundaries(uint gid) {
@@ -65,11 +61,4 @@ void main() {
 
 	apply_forces(gid);
 	//check_boundaries(gid);
-
-	particle_matrices[gid] = mat4(
-		vec4(particles[gid].scale, 0.0, 0.0, 0.0),
-		vec4(0.0, particles[gid].scale, 0.0, 0.0),
-		vec4(0.0, 0.0, particles[gid].scale, 0.0),
-		vec4(particles[gid].position.x, particles[gid].position.y, 0.0, 1.0)
-	);
 }
