@@ -5,9 +5,6 @@
 namespace maths {
 	template <typename T>
 	class vec2 {
-	protected:
-		T n[2];
-
 	public:
 		vec2<T>() : n{{}} {}
 		vec2<T>(const T f) : n{f, f} {}
@@ -50,6 +47,10 @@ namespace maths {
 
 		template <typename T>
 		friend T magnitude_squared(const vec2<T>& v);
+
+
+	protected:
+		T n[2];
 	};
 
 	typedef vec2<double> vec2d;

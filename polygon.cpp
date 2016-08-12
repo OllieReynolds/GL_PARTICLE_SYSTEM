@@ -46,19 +46,21 @@ namespace graphics {
 		}
 
 		glUniformMatrix4fv(
-			glGetUniformLocation(shader.program, "proj"),
+			//glGetUniformLocation(shader.program, "proj"),
+			shader.uniform_handle("proj"),
 			1,
 			GL_FALSE,
 			&maths::orthographic_perspective(
-				utils::resolution()[0],
-				utils::resolution()[1],
+				utils::resolution[0],
+				utils::resolution[1],
 				-1.f, 
 				1.f
 			)[0][0]
 		);
 
 		glUniformMatrix4fv(
-			glGetUniformLocation(shader.program, "model"),
+			//glGetUniformLocation(shader.program, "model"),
+			shader.uniform_handle("model"),
 			1,
 			GL_FALSE,
 			&maths::mat4().scale(scale).translate(position)[0][0]
@@ -71,7 +73,8 @@ namespace graphics {
 		if (!uvs.empty()) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, tex_data);
-			glUniform1i(glGetUniformLocation(shader.program, "tex0"), 0);
+			//glUniform1i(glGetUniformLocation(shader.program, "tex0"), 0);
+			glUniform1i(shader.uniform_handle("tex0"), 0);
 		}
 
 		glBindVertexArray(vao);
@@ -80,25 +83,11 @@ namespace graphics {
 	}
 
 	void Polygon::destroy_polygon() {
-		glDeleteProgram(shader.program);
+		shader.destroy();
 		glDeleteBuffers(1, &vbo);
 		glDeleteVertexArrays(1, &vao);
 
 		if (!uvs.empty())
 			glDeleteTextures(1, &tex_data);
-	}
-
-	void Polygon::add_vertex(const maths::vec3& v) {
-		glBindVertexArray(vao);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferSubData(
-			GL_ARRAY_BUFFER,
-			vertices.size() * sizeof(maths::vec3),
-			sizeof(maths::vec3),
-			&v[0]
-		);
-		glBindVertexArray(0);
-
-		vertices.push_back(v);
 	}
 }

@@ -1,4 +1,4 @@
-﻿#version 450
+#version 450
 
 struct Particle {
 	vec2 position;
@@ -21,7 +21,7 @@ out float velocity_to_colour;
 
 uniform mat4 proj;
 
-void main () {
+void main() {
 	int id = gl_InstanceID;
 	gl_Position = proj * particle_matrices[id] * vec4(vp, 1.0);
 	velocity_to_colour = length(particles[id].velocity);

@@ -47,10 +47,7 @@ namespace simulation {
 		);
 		std::cout << particle_system.print_compute_shader_info() << std::endl;
 
-		text = graphics::Text(
-			32,
-		    {0.f, 680.f}
-		);
+		text = graphics::Text(32);
 
 		run_state = state::RUN;
 	}
@@ -73,18 +70,12 @@ namespace simulation {
 		
 		particle_system.draw_particle_system();
 
-		
-
-		text.position = {0.f, 740.f};
-		text.draw_text("FPS: " + std::to_string((int)fps));
-		text.position = {0.f, 710.f};
-		text.draw_text("Particles: " + std::to_string(particle_system.size()));
-
-		text.position = {0.f, 680.f};
+		text.draw_text("FPS: "       + std::to_string((int)fps), {0.f, 740.f});
+		text.draw_text("Particles: " + std::to_string(65536),    {0.f, 710.f});
 		switch (run_state) {
-			case STOP: text.draw_text("State: STOP"); break;
-			case EDIT: text.draw_text("State: EDIT"); break;
-			case RUN:  text.draw_text("State: RUN"); break;
+			case STOP: text.draw_text("State: STOP", {0.f, 680.f}); break;
+			case EDIT: text.draw_text("State: EDIT", {0.f, 680.f}); break;
+			case RUN:  text.draw_text("State: RUN", {0.f, 680.f}); break;
 		}
 	}
 

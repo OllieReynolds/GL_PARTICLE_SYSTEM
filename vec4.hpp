@@ -2,9 +2,6 @@
 
 namespace maths {
 	class vec4 {
-	protected:
-		float n[4];
-
 	public:
 		vec4() : n{0} {}
 		vec4(const float d) : n{d, d, d, d} {}
@@ -17,5 +14,9 @@ namespace maths {
 
 		float& operator [] (int i) { return n[i]; }
 		const float& operator [] (int i) const { return n[i]; }
+
+
+	protected:
+		float n[4];
 	};
 }

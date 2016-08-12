@@ -9,19 +9,13 @@
 #include <string>
 #include <sstream>
 
+#include "vec2.hpp"
+
 namespace utils {
-	template <typename T>
-	T elapsed_time();
+	template <typename T> T elapsed_time();
+	template <typename T> void load_file(const char* fileName, T* data);
 
-	template <typename T>
-	T gen_random(T min, T max);
+	float gen_random(float min = 0.f, float max = 10.f);
 
-	template <>
-	int gen_random(int min, int max);
-
-	template <typename T>
-	void load_file(const char* fileName, T* data);
-
-	std::vector<float> cache_sin(const int frequency);
-	std::vector<float> cache_cos(const int frequency);
+	static const maths::vec2f resolution = {1366.f, 768.f};
 }

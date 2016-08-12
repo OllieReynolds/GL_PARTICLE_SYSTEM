@@ -19,6 +19,7 @@ namespace simulation {
 
 	class Simulation {
 	public:
+
 		Simulation();
 
 		void init_simulation();
@@ -29,16 +30,14 @@ namespace simulation {
 		void mouse_position(const maths::vec2f& position);
 		void on_kb_press(int key);
 
+
 	private:
+
 		maths::vec2f mouse_coords;
-
 		graphics::ParticleSystem particle_system;
-
 		graphics::Polygon polygon_simple;
 		graphics::Polygon polygon_texture;
-		
 		graphics::Text text;
-
 		state run_state;
 	};
 }

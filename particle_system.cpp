@@ -1,6 +1,18 @@
 #include "particle_system.hpp"
 
+//todo: compare vector assign and filling one by one
 namespace graphics {
+	ParticleSystem::ParticleSystem(int num_particles, const std::vector<maths::vec3>& vertices) :
+		particle_vertex_data(vertices),
+		particle_objects(),
+		particle_matrices()
+	{
+		for (int i = 0; i < num_particles; ++i) {
+			particle_objects.push_back(Particle());
+			particle_matrices.push_back(maths::mat4());
+		}
+	}
+
 	void ParticleSystem::init_particle_system() {
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
@@ -46,12 +58,13 @@ namespace graphics {
 			};
 
 			glUniformMatrix4fv(
-				glGetUniformLocation(render_shader.program, "proj"),
+				//glGetUniformLocation(render_shader.program, "proj"),
+				render_shader.uniform_handle("proj"),
 				1,
 				GL_FALSE,
 				&maths::orthographic_perspective(
-					utils::resolution()[0],
-					utils::resolution()[1],
+					utils::resolution[0],
+					utils::resolution[1],
 					-1.f,
 					1.f
 				)[0][0]
@@ -77,21 +90,17 @@ namespace graphics {
 		}
 		
 		{ // Sync client side memory with Compute Shader
-			int n = 65536;
-
 			{ // Particle SSBO
 				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
 				Particle* ptr = (Particle*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
-				for (size_t i = 0; i < n; ++i)
-					particle_objects[i] = ptr[i];
+				particle_objects.assign(ptr, ptr + particle_objects.size());
 				glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 			}
 
 			{ // Matrix SSBO
 				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, matrix_ssbo);
 				maths::mat4* ptr = (maths::mat4*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
-				for (size_t i = 0; i < n; ++i)
-					particle_matrices[i] = ptr[i];
+				particle_matrices.assign(ptr, ptr + particle_matrices.size());
 				glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 			}	
 		}
@@ -106,8 +115,8 @@ namespace graphics {
 	}
 
 	void ParticleSystem::destroy_particle_system() {
-		glDeleteProgram(compute_shader.program);
-		glDeleteProgram(render_shader.program);
+		render_shader.destroy();
+		compute_shader.destroy();
 		glDeleteBuffers(1, &particle_ssbo);
 		glDeleteBuffers(1, &vertex_vbo);
 		glDeleteBuffers(1, &matrix_ssbo);

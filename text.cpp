@@ -71,25 +71,27 @@ namespace graphics {
 		};
 
 		glUniformMatrix4fv(
-			glGetUniformLocation(shader.program, "proj"),
+			//glGetUniformLocation(shader.program, "proj"),
+			shader.uniform_handle("proj"),
 			1,
 			GL_FALSE,
 			&maths::orthographic_perspective(
-				utils::resolution()[0],
-				utils::resolution()[1],
+				utils::resolution[0],
+				utils::resolution[1],
 				-1.f,
 				1.f
 			)[0][0]
 		);
 
 		glUniform3fv(
-			glGetUniformLocation(shader.program, "colour"),
+			shader.uniform_handle("colour"),
+			//glGetUniformLocation(shader.program, "colour"),
 			1,
 			&maths::vec3(0.533f, 0.733f, 0.84f)[0]
 		);
 	}
 
-	void Text::draw_text(const std::string& msg) {
+	void Text::draw_text(const std::string& msg, const maths::vec2f& position) {
 		shader.use();
 
 		glActiveTexture(GL_TEXTURE0);
@@ -132,7 +134,8 @@ namespace graphics {
 	}
 
 	void Text::destroy_text() {
-		glDeleteProgram(shader.program);
+		//glDeleteProgram(shader.program);
+		shader.destroy();
 		glDeleteBuffers(1, &vbo);
 		glDeleteVertexArrays(1, &vao);
 	}

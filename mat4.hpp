@@ -6,10 +6,7 @@
 #include "vec4.hpp"
 
 namespace maths {
-	class mat4 {
-	protected:
-		vec4 n[4];
-		
+	class mat4 {	
 	public:
 		mat4() : n{{1, 0, 0, 0},{0, 1, 0, 0},{0, 0, 1, 0},{0, 0, 0, 1}} {}
 		mat4(const vec4& v0, const vec4& v1, const vec4& v2, const vec4& v3) : n{v0, v1, v2, v3} {}
@@ -47,5 +44,9 @@ namespace maths {
 
 		friend mat4 orthographic_perspective(float w, float h, float nZ, float fZ);
 		friend mat4 orthographic_perspective(float l, float r, float t, float b, float nZ, float fZ);
+
+
+	protected:
+		vec4 n[4];
 	};
 }

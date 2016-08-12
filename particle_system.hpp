@@ -1,41 +1,26 @@
 #pragma once
 
-#include <iterator>
 #include "forces.hpp"
-#include "globals.hpp"
 #include "shader.hpp"
 #include "mat4.hpp"
 
 namespace graphics {
 	struct Particle {
+		Particle() : 
+			position(utils::gen_random(0.f, utils::resolution[0]), utils::gen_random(0.f, utils::resolution[1])),
+			scale(utils::gen_random(2.f, 22.f)), mass(scale), velocity(0.f) 
+		{ 
+		}
+
 		maths::vec2f position;
 		maths::vec2f velocity;
 		float scale;
 		float mass;
-
-		Particle() :
-			position(
-				utils::gen_random(0.f, static_cast<float>(utils::resolution()[0])), 
-				utils::gen_random(0.f, static_cast<float>(utils::resolution()[1]))
-			),
-			scale(utils::gen_random(2.f, 22.f)),
-			mass(scale),
-			velocity(0.f)
-		{ }
 	};
 
 	class ParticleSystem {
 	public:
-		ParticleSystem(int num_particles = 10, const std::vector<maths::vec3>& vertices = {}) :
-			particle_vertex_data(vertices),
-			particle_objects(),
-			particle_matrices()
-		{
-			for (int i = 0; i < num_particles; ++i) {
-				particle_objects.push_back(Particle());
-				particle_matrices.push_back(maths::mat4());
-			}
-		}
+		ParticleSystem(int num_particles = 10, const std::vector<maths::vec3>& vertices = {});
 
 		void init_particle_system();
 		void update_particle_system();
@@ -44,13 +29,10 @@ namespace graphics {
 
 		std::string print_compute_shader_info();
 
-		size_t size() { return particle_objects.size(); }
 
 	private:
 		GLuint vao;
 		GLuint vertex_vbo;
-		//GLuint matrix_vbo;
-
 		GLuint particle_ssbo;
 		GLuint matrix_ssbo;
 

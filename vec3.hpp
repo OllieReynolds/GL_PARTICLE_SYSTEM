@@ -4,9 +4,6 @@
 
 namespace maths {
 	class vec3 {
-	protected:
-		float n[3];
-
 	public:
 		vec3() : n{0} {}
 		vec3(const float d) : n{d, d, d} {}
@@ -30,5 +27,9 @@ namespace maths {
 
 		friend float magnitude(const vec3& v);
 		friend float magnitude_squared(const vec3& v);
+
+
+	protected:
+		float n[3];
 	};
 }
