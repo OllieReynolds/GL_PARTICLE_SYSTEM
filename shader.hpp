@@ -4,7 +4,6 @@
 #include <iostream>
 #include <iterator>
 #include <fstream>
-#include <sstream>
 
 namespace utils {
 	class Shader {
