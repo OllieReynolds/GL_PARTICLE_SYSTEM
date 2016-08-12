@@ -17,65 +17,38 @@ namespace graphics {
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
 
-		{ // Matrix SSBO
-			glGenBuffers(1, &matrix_ssbo);
-			glBindBuffer(GL_ARRAY_BUFFER, matrix_ssbo);
-			glBufferData(
-				GL_ARRAY_BUFFER,
-				particle_matrices.size() * sizeof(maths::mat4),
-				&particle_matrices[0],
-				GL_DYNAMIC_DRAW
-			);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, matrix_ssbo);
-		}
-		
-
 		{ // Vertex VBO
 			glGenBuffers(1, &vertex_vbo);
 			glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
-			glBufferData(
-				GL_ARRAY_BUFFER,
-				particle_vertex_data.size() * sizeof(maths::vec3),
-				&particle_vertex_data[0],
-				GL_STATIC_DRAW
-			);
+			glBufferData(GL_ARRAY_BUFFER, particle_vertex_data.size() * sizeof(maths::vec3), &particle_vertex_data[0], GL_STATIC_DRAW);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 			glEnableVertexAttribArray(0);
+		}
+
+		{ // Matrix SSBO
+			glGenBuffers(1, &matrix_ssbo);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, matrix_ssbo);
+			glBufferData(GL_SHADER_STORAGE_BUFFER, particle_matrices.size() * sizeof(maths::mat4), &particle_matrices[0], GL_DYNAMIC_DRAW);
 		}
 
 		{ // Particle SSBO
 			glGenBuffers(1, &particle_ssbo);
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, particle_ssbo);
 			glBufferData(GL_SHADER_STORAGE_BUFFER, particle_objects.size() * sizeof(Particle), &particle_objects[0], GL_DYNAMIC_DRAW);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
 		}
 
-		
 		{ // Shaders
+			compute_shader = {
+				"cs_particle_physics.glsl"
+			};
+
 			render_shader = {
 				"vs_instanced.glsl",
 				"fs_instanced.glsl"
 			};
 
-			glUniformMatrix4fv(
-				//glGetUniformLocation(render_shader.program, "proj"),
-				render_shader.uniform_handle("proj"),
-				1,
-				GL_FALSE,
-				&maths::orthographic_perspective(
-					utils::resolution[0],
-					utils::resolution[1],
-					-1.f,
-					1.f
-				)[0][0]
-			);
-
-			compute_shader = {
-				"cs_particle_physics.glsl"
-			};
+			glUniformMatrix4fv(render_shader.uniform_handle("proj"), 1, GL_FALSE, &maths::orthographic_perspective(utils::resolution[0], utils::resolution[1], -1.f, 1.f)[0][0]);
 		}	
-
-		print_compute_shader_info();
 	}
 
 	void ParticleSystem::update_particle_system() {		
