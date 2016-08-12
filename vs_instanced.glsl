@@ -1,28 +1,16 @@
 #version 450
 
-struct Particle {
-	vec2 position;
-	vec2 velocity;
-	float scale;
-	float mass;
-};
+layout(location = 0) in vec2 position;
+layout(location = 1) in vec2 velocity;
+layout(location = 2) in float scale;
+layout(location = 3) in float mass;
 
-layout(std430, binding = 0) buffer Particles {
-	Particle particles[];
-};
-
-layout(std430, binding = 1) buffer ParticleMatrices {
-	mat4 particle_matrices[];
-};
-
-layout(location = 0) in vec3 vp;
-
-out float velocity_to_colour;
+out float out_colour;
 
 uniform mat4 proj;
 
 void main() {
 	int id = gl_InstanceID;
-	gl_Position = proj * particle_matrices[id] * vec4(vp, 1.0);
-	velocity_to_colour = length(particles[id].velocity);
+	gl_Position = proj * particle_matrices[id] * vec4(vp, 0.0, 1.0);
+	out_colour = length(particles[id].velocity);
 };
