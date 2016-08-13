@@ -38,12 +38,12 @@ namespace simulation {
 		//);
 
 		particle_system = graphics::ParticleSystem(
-			65536,
-			{   // Vertices
-				{ 0.0,  0.5, 0.0},
-				{ 0.5, -0.5, 0.0},
-				{-0.5, -0.5, 0.0}
-			}
+			32000
+			//{   // Vertices
+			//	{ 0.0,  0.5, 0.0},
+			//	{ 0.5, -0.5, 0.0},
+			//	{-0.5, -0.5, 0.0}
+			//}
 		);
 		std::cout << particle_system.print_compute_shader_info() << std::endl;
 
@@ -71,7 +71,7 @@ namespace simulation {
 		particle_system.draw_particle_system();
 
 		text.draw_text("FPS: "       + std::to_string((int)fps), {0.f, 740.f});
-		text.draw_text("Particles: " + std::to_string(65536),    {0.f, 710.f});
+		text.draw_text("Particles: " + std::to_string(32000),    {0.f, 710.f});
 		switch (run_state) {
 			case STOP: text.draw_text("State: STOP", {0.f, 680.f}); break;
 			case EDIT: text.draw_text("State: EDIT", {0.f, 680.f}); break;

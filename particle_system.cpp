@@ -2,40 +2,34 @@
 
 //todo: compare vector assign and filling one by one
 namespace graphics {
-	ParticleSystem::ParticleSystem(int num_particles, const std::vector<maths::vec3>& vertices) :
-		particle_vertex_data(vertices),
-		particle_objects(),
-		particle_matrices()
-	{
-		for (int i = 0; i < num_particles; ++i) {
-			particle_objects.push_back(Particle());
-			particle_matrices.push_back(maths::mat4());
-		}
-	}
-
 	void ParticleSystem::init_particle_system() {
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
 
-		{ // Vertex VBO
-			glGenBuffers(1, &vertex_vbo);
-			glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
-			glBufferData(GL_ARRAY_BUFFER, particle_vertex_data.size() * sizeof(maths::vec3), &particle_vertex_data[0], GL_STATIC_DRAW);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-			glEnableVertexAttribArray(0);
-		}
-
-		{ // Matrix SSBO
-			glGenBuffers(1, &matrix_ssbo);
-			glBindBuffer(GL_SHADER_STORAGE_BUFFER, matrix_ssbo);
-			glBufferData(GL_SHADER_STORAGE_BUFFER, particle_matrices.size() * sizeof(maths::mat4), &particle_matrices[0], GL_DYNAMIC_DRAW);
-		}
-
 		{ // Particle SSBO
 			glGenBuffers(1, &particle_ssbo);
-			glBindBuffer(GL_SHADER_STORAGE_BUFFER, particle_ssbo);
-			glBufferData(GL_SHADER_STORAGE_BUFFER, particle_objects.size() * sizeof(Particle), &particle_objects[0], GL_DYNAMIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, particle_ssbo);
+			glBufferData(GL_ARRAY_BUFFER, particles.size() * sizeof(Particle), &particles[0], GL_STATIC_DRAW);
 		}
+
+		{ // Setup Vertex Attributes
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(2);
+			glEnableVertexAttribArray(3);
+
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), 0);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (GLvoid*)(sizeof(float) * 2));
+			glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (GLvoid*)(sizeof(float) * 4));
+			glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (GLvoid*)(sizeof(float) * 5));
+
+			glVertexAttribDivisor(0, 1);
+			glVertexAttribDivisor(1, 1);
+			glVertexAttribDivisor(2, 1);
+			glVertexAttribDivisor(3, 1);
+		}
+
+		glBindVertexArray(0);
 
 		{ // Shaders
 			compute_shader = {
@@ -43,11 +37,12 @@ namespace graphics {
 			};
 
 			render_shader = {
-				"vs_instanced.glsl",
-				"fs_instanced.glsl"
+				"vs_particle_system.glsl",
+				"fs_particle_system.glsl",
+				"gs_particle_system.glsl"
 			};
 
-			glUniformMatrix4fv(render_shader.uniform_handle("proj"), 1, GL_FALSE, &maths::orthographic_perspective(utils::resolution[0], utils::resolution[1], -1.f, 1.f)[0][0]);
+			glUniformMatrix4fv(render_shader.uniform_handle("projection"), 1, GL_FALSE, &maths::orthographic_perspective(utils::resolution[0], utils::resolution[1], -1.f, 1.f)[0][0]);
 		}	
 	}
 
@@ -57,18 +52,9 @@ namespace graphics {
 		{ // Invoke Compute Shader and wait for all memory access to SSBO to safely finish
 			compute_shader.use();
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, matrix_ssbo);
-			glDispatchCompute(128, 1, 1);
-			glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+			glDispatchCompute(256, 1, 1);
+			glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
 		}
-		
-		{ // Sync client side memory with Compute Shader
-			{ // Particle SSBO
-				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
-				Particle* ptr = (Particle*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
-				particle_objects.assign(ptr, ptr + particle_objects.size());
-				glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-			}
 
 			{ // Matrix SSBO
 				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, matrix_ssbo);

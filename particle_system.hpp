@@ -20,7 +20,12 @@ namespace graphics {
 
 	class ParticleSystem {
 	public:
-		ParticleSystem(int num_particles = 10, const std::vector<maths::vec3>& vertices = {});
+		ParticleSystem(int num_particles = 10) : particles() 
+		{
+			for (int i = 0; i < num_particles; ++i) {
+				particles.push_back(Particle());
+			}
+		}
 
 		void init_particle_system();
 		void update_particle_system();
