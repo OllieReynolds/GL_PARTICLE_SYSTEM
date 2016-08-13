@@ -37,15 +37,11 @@ namespace graphics {
 
 	private:
 		GLuint vao;
-		GLuint vertex_vbo;
 		GLuint particle_ssbo;
-		GLuint matrix_ssbo;
 
 		utils::Shader compute_shader;
 		utils::Shader render_shader;
 		
-		std::vector<Particle>    particle_objects;
-		std::vector<maths::mat4> particle_matrices;
-		std::vector<maths::vec3> particle_vertex_data;
+		std::vector<Particle> particles;
 	};
 }
