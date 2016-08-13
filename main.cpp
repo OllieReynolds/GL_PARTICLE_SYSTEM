@@ -72,8 +72,13 @@ namespace {
 	
 		// GL Config
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+
+
 		glClearColor(0.f, 0.f, 0.f, 0.f);
+
+		glGetError();
 	
 		return {
 			setup_result::SUCCESS,
@@ -109,7 +114,7 @@ int main() {
 	float frame_start_time = utils::elapsed_time<float>();
 
 	// Run until Esc. pressed or N seconds elapsed
-	while (check_running(status.window, 12)) {
+	while (check_running(status.window, 300000.f)) {
 		{ // Per-frame updating and drawing here
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			simulation.update_simulation(status.window);
@@ -130,88 +135,3 @@ int main() {
 	glfwTerminate();
 	return 0;
 }
-//
-//	#pragma comment(lib, "glew32.lib")
-//	#pragma comment(lib, "glfw3.lib")
-//	#pragma comment(lib, "opengl32.lib")
-//	#pragma comment(lib, "SOIL.lib")
-//	#pragma comment(lib, "freetype265MT.lib")
-//
-//#include <glew.h>
-//#include <glfw3.h>
-////Including standard lib
-//#include <iostream>
-//#include <vector>
-//
-//
-//struct Vertex {
-//	float x;
-//	float y;
-//	float z;
-//};
-//
-//Vertex my_awesome_vertex = {10.f, -4.32f, 0.f};
-//
-//std::vector<Vertex> triangle_vertices = {
-//	{ 0.0,  0.5, 0.0},
-//	{ 0.5, -0.5, 0.0},
-//	{-0.5, -0.5, 0.0}
-//};
-//
-//GLuint vertex_buffer_ref;
-//
-//
-//void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-//	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-//		glfwSetWindowShouldClose(window, GL_TRUE);
-//	}
-//}
-//
-//int main() {
-//	//Setting up glfw and also the windows hint to choose specific options such as the version of OpenGL,
-//	//whether it is resizable and so on.
-//	glfwInit();
-//	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-//	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-//	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-//	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-//	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-//
-//	//Create a window in OpenGL.
-//	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGLWindow", nullptr, nullptr);
-//	if (window == nullptr) {
-//		std::cout << "Failed to create a GLFW Window!" << std::endl;
-//		glfwTerminate();
-//		return -1;
-//	}
-//	glfwMakeContextCurrent(window);
-//
-//	//Initialize GLEW
-//	glewExperimental = GL_TRUE;
-//	if (glewInit() != GLEW_OK) {
-//		std::cout << "GLEW has not been initialized!" << std::endl;
-//		return -1;
-//	}
-//
-//	int width;
-//	int height;
-//	glfwGetFramebufferSize(window, &width, &height);
-//	glViewport(0, 0, width, height);
-//
-//	while (!glfwWindowShouldClose(window)) {
-//		glfwPollEvents();
-//
-//		//Render here..
-//		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-//		glClear(GL_COLOR_BUFFER_BIT);
-//
-//		glfwSwapBuffers(window);
-//		glfwSetKeyCallback(window, key_callback);
-//	}
-//
-//
-//	glfwTerminate();
-//
-//
-//	return 0;
-//}

@@ -23,7 +23,7 @@ namespace graphics {
 
 	class ParticleSystem {
 	public:
-		ParticleSystem(int num_particles) : particles() 
+		ParticleSystem(int num_particles = 10) : particles() 
 		{
 			for (int i = 0; i < num_particles; ++i) {
 				particles.push_back(Particle());

@@ -32,6 +32,29 @@ namespace utils {
 		use();
 	}
 
+	Shader::Shader(const char* vertex_shader_filename, const char* fragment_shader_filename, const char* geom_shader_filename) {
+		GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
+		std::string v_src = load_source(vertex_shader_filename);
+		compile(vertShader, v_src.c_str());
+
+		GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+		std::string f_src = load_source(fragment_shader_filename);
+		compile(fragShader, f_src.c_str());
+
+		GLuint geomShader = glCreateShader(GL_GEOMETRY_SHADER);
+		std::string g_src = load_source(geom_shader_filename);
+		compile(geomShader, g_src.c_str());
+
+		program = glCreateProgram();
+
+		glAttachShader(program, vertShader);
+		glAttachShader(program, fragShader);
+		glAttachShader(program, geomShader);
+
+		link();
+		use();
+	}
+
 	void Shader::compile(GLuint shader, const char* src) {
 		GLint status;
 		GLchar infoLog[512];
