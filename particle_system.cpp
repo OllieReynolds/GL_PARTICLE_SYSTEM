@@ -12,6 +12,7 @@ namespace graphics {
 			glBufferData(GL_ARRAY_BUFFER, particles.size() * sizeof(Particle), &particles[0], GL_STATIC_DRAW);
 		}
 
+
 		{ // Setup Vertex Attributes
 			glEnableVertexAttribArray(0);
 			glEnableVertexAttribArray(1);
@@ -33,7 +34,7 @@ namespace graphics {
 
 		{ // Shaders
 			compute_shader = {
-				"cs_particle_physics.glsl"
+				"cs_particle_system.glsl"
 			};
 
 			render_shader = {
@@ -46,39 +47,27 @@ namespace graphics {
 		}	
 	}
 
-	void ParticleSystem::update_particle_system() {		
-		glBindVertexArray(vao);
-
+	void ParticleSystem::draw_particle_system() {
 		{ // Invoke Compute Shader and wait for all memory access to SSBO to safely finish
 			compute_shader.use();
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
-			glDispatchCompute(256, 1, 1);
+			glDispatchCompute((particles.size() / 128)+1, 1, 1);
 			glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
 		}
 
-			{ // Matrix SSBO
-				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, matrix_ssbo);
-				maths::mat4* ptr = (maths::mat4*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
-				particle_matrices.assign(ptr, ptr + particle_matrices.size());
-				glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-			}	
+		{ // Render the results
+			render_shader.use();
+			glBindVertexArray(vao);
+			glDrawArraysInstanced(GL_POINTS, 0, 1, particles.size());
+			glBindVertexArray(0);
 		}
-	}
-
-	void ParticleSystem::draw_particle_system() {
-		glBindVertexArray(vao);
-		render_shader.use();
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, matrix_ssbo);
-		glDrawArraysInstanced(GL_TRIANGLES, 0, 3, particle_objects.size());
+		
 	}
 
 	void ParticleSystem::destroy_particle_system() {
 		render_shader.destroy();
 		compute_shader.destroy();
 		glDeleteBuffers(1, &particle_ssbo);
-		glDeleteBuffers(1, &vertex_vbo);
-		glDeleteBuffers(1, &matrix_ssbo);
 		glDeleteVertexArrays(1, &vao);
 	}
 

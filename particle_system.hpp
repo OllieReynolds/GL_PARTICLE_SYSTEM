@@ -8,8 +8,10 @@ namespace graphics {
 	struct Particle {
 		Particle() : 
 			position(utils::gen_random(0.f, utils::resolution[0]), utils::gen_random(0.f, utils::resolution[1])),
-			scale(utils::gen_random(2.f, 22.f)), mass(scale), velocity(0.f) 
-		{ 
+			velocity(0.f),
+			scale(utils::gen_random(0.01f, 32.f)), 
+			mass(scale)
+		{  
 		}
 
 		maths::vec2f position;
@@ -17,6 +19,7 @@ namespace graphics {
 		float scale;
 		float mass;
 	};
+
 
 	class ParticleSystem {
 	public:
@@ -28,7 +31,6 @@ namespace graphics {
 		}
 
 		void init_particle_system();
-		void update_particle_system();
 		void draw_particle_system();
 		void destroy_particle_system();
 
