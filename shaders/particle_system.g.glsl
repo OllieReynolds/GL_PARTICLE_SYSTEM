@@ -14,7 +14,7 @@ out float geom_speed;
 void main() {
 	const vec4 position = gl_in[0].gl_Position;
 	const float speed = vertex_speed[0];
-	const float scale = vertex_scale[0] * 0.3;
+	const float scale = vertex_scale[0] * 0.2;
 
 	geom_speed = speed;
 

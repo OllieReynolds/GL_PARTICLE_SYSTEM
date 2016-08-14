@@ -1,4 +1,4 @@
-#include "vec3.hpp"
+#include "..\include\vec3.hpp"
 
 namespace maths {
 	vec3 operator * (const vec3& v1, const float f) {

@@ -1,4 +1,4 @@
-#include "vec2.hpp"
+#include "..\include\vec2.hpp"
 
 namespace maths {
 	template<typename T>

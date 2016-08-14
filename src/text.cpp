@@ -1,4 +1,4 @@
-#include "text.hpp"
+#include "..\include\text.hpp"
 
 namespace graphics {
 
@@ -9,7 +9,7 @@ namespace graphics {
 		}
 
 		FT_Face font_face;
-		if (FT_New_Face(ft, "DS-DIGI.ttf", 0, &font_face)) {
+		if (FT_New_Face(ft, "data/DS-DIGI.ttf", 0, &font_face)) {
 			std::cout << "Error initialising font" << std::endl;
 		}
 
@@ -66,8 +66,8 @@ namespace graphics {
 		glEnableVertexAttribArray(0);
 
 		shader = {
-			"vs_text.glsl",
-			"fs_text.glsl"
+			"shaders/text.v.glsl",
+			"shaders/text.f.glsl"
 		};
 
 		glUniformMatrix4fv(

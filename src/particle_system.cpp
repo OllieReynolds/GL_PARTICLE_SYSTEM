@@ -1,4 +1,4 @@
-#include "particle_system.hpp"
+#include "..\include\particle_system.hpp"
 
 //todo: compare vector assign and filling one by one
 namespace graphics {
@@ -34,13 +34,13 @@ namespace graphics {
 
 		{ // Shaders
 			compute_shader = {
-				"cs_particle_system.glsl"
+				"shaders/particle_system.c.glsl"
 			};
 
 			render_shader = {
-				"vs_particle_system.glsl",
-				"fs_particle_system.glsl",
-				"gs_particle_system.glsl"
+				"shaders/particle_system.v.glsl",
+				"shaders/particle_system.f.glsl",
+				"shaders/particle_system.g.glsl"
 			};
 
 			glUniformMatrix4fv(render_shader.uniform_handle("projection"), 1, GL_FALSE, &maths::orthographic_perspective(utils::resolution[0], utils::resolution[1], -1.f, 1.f)[0][0]);

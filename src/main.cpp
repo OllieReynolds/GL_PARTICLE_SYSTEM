@@ -12,7 +12,7 @@
 	#pragma comment(lib, "freetype265MT.lib")
 #endif
 
-#include "simulation.hpp"
+#include "..\include\simulation.hpp"
 
 namespace {
 	void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {

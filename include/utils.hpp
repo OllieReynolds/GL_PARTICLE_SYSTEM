@@ -9,11 +9,10 @@
 #include <string>
 #include <sstream>
 
-#include "vec2.hpp"
+#include "..\include\vec2.hpp"
 
 namespace utils {
 	template <typename T> T elapsed_time();
-	template <typename T> void load_file(const char* fileName, T* data);
 
 	float gen_random(float min = 0.f, float max = 10.f);
 

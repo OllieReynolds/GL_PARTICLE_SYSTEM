@@ -1,4 +1,4 @@
-#include "polygon.hpp"
+#include "..\include\polygon.hpp"
 
 namespace graphics {
 	void Polygon::init_polygon() {
@@ -40,9 +40,9 @@ namespace graphics {
 			SOIL_free_image_data(image);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
-			shader = utils::Shader("vs_texture.glsl", "fs_texture.glsl");
+			shader = utils::Shader("shaders/texture.v.glsl", "shaders/texture.f.glsl");
 		} else {
-			shader = utils::Shader("vs_default.glsl", "fs_default.glsl");
+			shader = utils::Shader("shaders/default.v.glsl", "shaders/default.f.glsl");
 		}
 
 		glUniformMatrix4fv(

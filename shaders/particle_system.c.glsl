@@ -59,5 +59,5 @@ void main() {
 	uint gid = gl_GlobalInvocationID.x;
 
 	apply_forces(gid);
-	check_boundaries(gid);
+	//check_boundaries(gid);
 }

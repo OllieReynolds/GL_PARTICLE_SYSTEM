@@ -1,4 +1,4 @@
-#include "forces.hpp"
+#include "..\include\forces.hpp"
 
 namespace physics {
 	maths::vec2f calc_friction(const float intensity, const maths::vec2f& velocity) {
