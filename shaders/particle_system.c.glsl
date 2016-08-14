@@ -14,27 +14,25 @@ layout(std430, binding = 0) buffer Particles {
 layout(local_size_x = 128) in;
 
 uniform float time;
+uniform vec2 resolution;
+uniform vec2 attractor_radii;
 
 void check_boundaries(uint gid) {
-	float offset = particles[gid].scale * 0.5;
-	float t = 1280.0 - offset;
-	float r = 720.0 - offset;
-
-	if (particles[gid].position.x > r) {
-		particles[gid].position.x = r;
+	if (particles[gid].position.x > resolution.x) {
+		particles[gid].position.x = resolution.x;
 		particles[gid].velocity.x *= -1;
 	}
-	else if (particles[gid].position.x < offset) {
-		particles[gid].position.x = offset;
+	else if (particles[gid].position.x < 0) {
+		particles[gid].position.x = 0;
 		particles[gid].velocity.x *= -1;
 	}
 
-	if (particles[gid].position.y > t) {
-		particles[gid].position.y = t;
+	if (particles[gid].position.y > resolution.y) {
+		particles[gid].position.y = resolution.y;
 		particles[gid].velocity.y *= -1;
 	}
-	else if (particles[gid].position.y < offset) {
-		particles[gid].position.y = offset;
+	else if (particles[gid].position.y < 0) {
+		particles[gid].position.y = 0;
 		particles[gid].velocity.y *= -1;
 	}
 }
@@ -45,24 +43,23 @@ vec2 calculate_gravity(uint gid, float attractor_mass, vec2 attractor_location) 
 	return (attractor_location - particles[gid].position) * m;
 }
 
-void apply_forces(uint gid) {
-	vec2 s = vec2(320.0, 180.0);
-	vec2 r = vec2(100.0, 100.0);
-	vec2 p = vec2(r.x * cos(time), r.y * sin(time)) + r + s;
-	vec2 g = calculate_gravity(gid, 0.0001, p);
-	particles[gid].velocity += g * particles[gid].mass;
-
-	/*vec2 force_of_gravity1 = calculate_gravity(gid, 0.0001, vec2(10.0, 360.0));
-	vec2 force_of_gravity2 = calculate_gravity(gid, 0.0001, vec2(1270.0, 360.0));
-
-	particles[gid].velocity += force_of_gravity1 * particles[gid].mass;
-	particles[gid].velocity += force_of_gravity2 * particles[gid].mass;*/
-
-	particles[gid].position += particles[gid].velocity;	
-}
-
 void main() {
 	uint gid = gl_GlobalInvocationID.x;
-	apply_forces(gid);
+	
+	// Attractor position and offset
+	vec2 p = 0.5 * resolution;
+	vec2 a = vec2(cos(time), sin(time)) * attractor_radii;
+
+	// Attractor #1
+	vec2 g1 = calculate_gravity(gid, 0.0001, p + a);
+	particles[gid].velocity += g1 * particles[gid].mass;
+
+	// Attractor #2
+	vec2 g2 = calculate_gravity(gid, 0.0001, p - a);
+	particles[gid].velocity += g2 * particles[gid].mass;
+
+	// Update position from velocity
+	particles[gid].position += particles[gid].velocity;
+
 	//check_boundaries(gid);
 }

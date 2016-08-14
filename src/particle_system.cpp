@@ -38,6 +38,8 @@ namespace graphics {
 			};
 
 			glUniform1f(compute_shader.uniform_handle("time"), utils::elapsed_time<float>());
+			glUniform2f(compute_shader.uniform_handle("resolution"), utils::resolution[0], utils::resolution[1]);
+			glUniform2f(compute_shader.uniform_handle("attractor_radii"), 400.f, 200.f);
 
 			render_shader = {
 				"shaders/particle_system.v.glsl",
@@ -45,6 +47,7 @@ namespace graphics {
 				"shaders/particle_system.g.glsl"
 			};
 
+			glUniform1f(render_shader.uniform_handle("vertex_count"), particles.size());
 			glUniformMatrix4fv(render_shader.uniform_handle("projection"), 1, GL_FALSE, &maths::orthographic_perspective(utils::resolution[0], utils::resolution[1], -1.f, 1.f)[0][0]);
 		}	
 	}

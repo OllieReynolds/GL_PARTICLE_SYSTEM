@@ -8,8 +8,11 @@ layout(location = 3) in float mass;
 out float vertex_scale;
 out float vertex_speed;
 
+uniform float vertex_count;
+
 void main() {
-	gl_Position = vec4(position, 0.0, 1.0);
+	float depth_bias = ((2.0 / vertex_count) * gl_VertexID) - 1.0;
+	gl_Position = vec4(position, depth_bias, 1.0);
 
 	vertex_scale = scale;
 	vertex_speed = length(velocity);
