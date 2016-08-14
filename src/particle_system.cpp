@@ -37,6 +37,8 @@ namespace graphics {
 				"shaders/particle_system.c.glsl"
 			};
 
+			glUniform1f(compute_shader.uniform_handle("time"), utils::elapsed_time<float>());
+
 			render_shader = {
 				"shaders/particle_system.v.glsl",
 				"shaders/particle_system.f.glsl",
@@ -50,6 +52,7 @@ namespace graphics {
 	void ParticleSystem::draw_particle_system() {
 		{ // Invoke Compute Shader and wait for all memory access to SSBO to safely finish
 			compute_shader.use();
+			glUniform1f(compute_shader.uniform_handle("time"), utils::elapsed_time<float>());
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
 			glDispatchCompute((particles.size() / 128)+1, 1, 1);
 			glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
