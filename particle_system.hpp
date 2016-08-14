@@ -9,7 +9,7 @@ namespace graphics {
 		Particle() : 
 			position(utils::gen_random(0.f, utils::resolution[0]), utils::gen_random(0.f, utils::resolution[1])),
 			velocity(0.f),
-			scale(utils::gen_random(2.f, 22.f)), 
+			scale(utils::gen_random(0.01f, 32.f)), 
 			mass(scale)
 		{  
 		}

@@ -114,7 +114,7 @@ int main() {
 	float frame_start_time = utils::elapsed_time<float>();
 
 	// Run until Esc. pressed or N seconds elapsed
-	while (check_running(status.window, 300000.f)) {
+	while (check_running(status.window, INT_MAX)) {
 		{ // Per-frame updating and drawing here
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			simulation.update_simulation(status.window);

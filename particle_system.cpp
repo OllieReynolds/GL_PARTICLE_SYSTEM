@@ -50,7 +50,7 @@ namespace graphics {
 		{ // Invoke Compute Shader and wait for all memory access to SSBO to safely finish
 			compute_shader.use();
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
-			glDispatchCompute(256, 1, 1);
+			glDispatchCompute((particles.size() / 128)+1, 1, 1);
 			glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
 		}
 
