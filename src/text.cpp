@@ -3,94 +3,68 @@
 namespace graphics {
 
 	void Text::init_text() {
-		FT_Library ft;
-		if (FT_Init_FreeType(&ft)) {
-			std::cout << "Error initialising FreeType" << std::endl;
-		}
+		{ // FreeType Lib setup and 
+			FT_Library ft_lib;
+			FT_Face ff;
 
-		FT_Face font_face;
-		if (FT_New_Face(ft, "data/DS-DIGI.ttf", 0, &font_face)) {
-			std::cout << "Error initialising font" << std::endl;
-		}
+			FT_Init_FreeType(&ft_lib);
+			FT_New_Face(ft_lib, "data/DS-DIGI.ttf", 0, &ff);
+			FT_Set_Pixel_Sizes(ff, 0, pixel_size);
 
-		FT_Set_Pixel_Sizes(font_face, 0, pixel_size);
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			for (GLubyte c = 0; c < 128; ++c) {
+				FT_Load_Char(ff, c, FT_LOAD_RENDER);
 
-		for (GLubyte c = 0; c < 128; ++c) {
-			if (FT_Load_Char(font_face, c, FT_LOAD_RENDER)) {
-				std::cout << "Error retrieving glyph: " << c << std::endl;
+				GLuint tex;
+				glGenTextures(1, &tex);
+				glBindTexture(GL_TEXTURE_2D, tex);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ff->glyph->bitmap.width, ff->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, ff->glyph->bitmap.buffer);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+				glyph_map.insert(std::pair<GLchar, Glyph>(
+					c, 
+					{
+						tex,
+						ff->glyph->advance.x,
+						maths::vec2i(ff->glyph->bitmap.width, ff->glyph->bitmap.rows),
+						maths::vec2i(ff->glyph->bitmap_left, ff->glyph->bitmap_top)
+					}
+				));
 			}
 
-			GLuint tex;
-			glGenTextures(1, &tex);
-			glBindTexture(GL_TEXTURE_2D, tex);
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RED,
-				font_face->glyph->bitmap.width,
-				font_face->glyph->bitmap.rows,
-				0,
-				GL_RED,
-				GL_UNSIGNED_BYTE,
-				font_face->glyph->bitmap.buffer
-			);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			Glyph g = {
-				tex,
-				font_face->glyph->advance.x,
-				maths::vec2i(font_face->glyph->bitmap.width, font_face->glyph->bitmap.rows),
-				maths::vec2i(font_face->glyph->bitmap_left, font_face->glyph->bitmap_top),
-			};
-
-			glyph_map.insert(std::pair<GLchar, Glyph>(c, g));
+			FT_Done_Face(ff);
+			FT_Done_FreeType(ft_lib);
 		}
 
-		FT_Done_Face(font_face);
-		FT_Done_FreeType(ft);
+		{ // GL Data
+			glGenVertexArrays(1, &vao);
+			glBindVertexArray(vao);
 
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
+			glGenBuffers(1, &vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
 
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+		}
+		
+		{ // Shaders
+			shader = {
+				"shaders/text.v.glsl",
+				"shaders/text.f.glsl"
+			};
 
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
-		glEnableVertexAttribArray(0);
-
-		shader = {
-			"shaders/text.v.glsl",
-			"shaders/text.f.glsl"
-		};
-
-		glUniformMatrix4fv(
-			//glGetUniformLocation(shader.program, "proj"),
-			shader.uniform_handle("proj"),
-			1,
-			GL_FALSE,
-			&maths::orthographic_perspective(
-				utils::resolution[0],
-				utils::resolution[1],
-				-1.f,
-				1.f
-			)[0][0]
-		);
-
-		glUniform3fv(
-			shader.uniform_handle("colour"),
-			//glGetUniformLocation(shader.program, "colour"),
-			1,
-			&maths::vec3(0.533f, 0.733f, 0.84f)[0]
-		);
+			glUniform3fv(shader.uniform_handle("colour"), 1, &maths::vec3(0.533f, 0.733f, 0.84f)[0]);
+			glUniformMatrix4fv(shader.uniform_handle("proj"), 1, GL_FALSE, &maths::orthographic_perspective(utils::resolution[0], utils::resolution[1], -1.f, 1.f)[0][0]);
+		}
 	}
 
+	// Make a new version of this class, using geometry shaders to construct quads from individual points, each representing a font quad, have geom shader make the UVs and use a triangle strip
 	void Text::draw_text(const std::string& msg, const maths::vec2f& position) {
 		shader.use();
 
@@ -134,7 +108,6 @@ namespace graphics {
 	}
 
 	void Text::destroy_text() {
-		//glDeleteProgram(shader.program);
 		shader.destroy();
 		glDeleteBuffers(1, &vbo);
 		glDeleteVertexArrays(1, &vao);

@@ -9,7 +9,7 @@ namespace graphics {
 		{ // Particle SSBO
 			glGenBuffers(1, &particle_ssbo);
 			glBindBuffer(GL_ARRAY_BUFFER, particle_ssbo);
-			glBufferData(GL_ARRAY_BUFFER, particles.size() * sizeof(Particle), &particles[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, particles.size() * sizeof(Particle), &particles[0], GL_STREAM_DRAW);
 		}
 
 
