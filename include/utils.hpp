@@ -16,5 +16,5 @@ namespace utils {
 
 	float gen_random(float min = 0.f, float max = 10.f);
 
-	static const maths::vec2f resolution = {1280.f, 720.f};
+	static const maths::vec2f resolution = {1920.f, 1080.f};
 }

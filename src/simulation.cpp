@@ -20,12 +20,14 @@ namespace simulation {
 	void Simulation::draw_simulation(const float fps) {
 		particle_system.draw_particle_system();
 
-		text.draw_text("FPS: " + std::to_string((int)fps), {0.f, 692.f});
-		text.draw_text("Particles: 524,288", {0.f, 662.f});
+		static const maths::vec2f text_region_position = {0.f, utils::resolution[1] - 28.f};
+		static const maths::vec2f text_region_offset = {0.f, 28.f};
+		text.draw_text("FPS: " + std::to_string((int)fps), text_region_position);
+		text.draw_text("Particles: 524,288", text_region_position - text_region_offset);
 		switch (run_state) {
-			case STOP: text.draw_text("State: STOP", {0.f, 632.f}); break;
-			case EDIT: text.draw_text("State: EDIT", {0.f, 632.f}); break;
-			case RUN:  text.draw_text("State: RUN",  {0.f, 632.f}); break;
+			case STOP: text.draw_text("State: STOP", text_region_position - (text_region_offset * 2.f)); break;
+			case EDIT: text.draw_text("State: EDIT", text_region_position - (text_region_offset * 2.f)); break;
+			case RUN:  text.draw_text("State: RUN",  text_region_position - (text_region_offset * 2.f)); break;
 		}
 	}
 

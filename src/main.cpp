@@ -15,9 +15,9 @@
 #include "..\include\simulation.hpp"
 
 namespace {
-	void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
-		//simulation::Simulation* simulation = reinterpret_cast<simulation::Simulation*>(glfwGetWindowUserPointer(window));
-		//simulation->mouse_position(maths::vec2f(xpos, ypos));
+	/*void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+		simulation::Simulation* simulation = reinterpret_cast<simulation::Simulation*>(glfwGetWindowUserPointer(window));
+		simulation->mouse_position(maths::vec2f(xpos, ypos));
 	}
 
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -25,15 +25,10 @@ namespace {
 			simulation::Simulation* simulation = reinterpret_cast<simulation::Simulation*>(glfwGetWindowUserPointer(window));
 			simulation->on_kb_press(key);
 		}
-	}
-
-	enum setup_result {
-		SUCCESS,
-		FAILURE
-	};
+	}*/
 
 	struct setup_status {
-		setup_result code;
+		uint16_t code;
 		std::string msg;
 		GLFWwindow* window;
 	};
@@ -41,7 +36,7 @@ namespace {
 	setup_status setup() {
 		// GLFW Init
 		if (!glfwInit()) 
-			return {setup_result::FAILURE, "GLFW failed to initialise", nullptr};
+			return {1, "GLFW failed to initialise", nullptr};
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -55,11 +50,11 @@ namespace {
 
 		if (!window) {
 			glfwTerminate();
-			return {setup_result::FAILURE, "GFLW failed to create window", nullptr};
+			return {1, "GFLW failed to create window", nullptr};
 		}
 
-		glfwSetKeyCallback(window, key_callback);
-		glfwSetCursorPosCallback(window, cursor_position_callback);
+		//glfwSetKeyCallback(window, key_callback);
+		//glfwSetCursorPosCallback(window, cursor_position_callback);
 		glfwMakeContextCurrent(window);
 
 		// Glew Init
@@ -67,7 +62,7 @@ namespace {
 		GLenum err = glewInit();
 		if (err != GLEW_OK) {
 			glfwTerminate();
-			return {setup_result::FAILURE, "Glew failed to initialise", nullptr};
+			return {1, "Glew failed to initialise", nullptr};
 		}
 	
 		// GL Config
@@ -81,7 +76,7 @@ namespace {
 		glGetError();
 	
 		return {
-			setup_result::SUCCESS,
+			0,
 			[]() -> std::string {
 				std::stringstream ss;
 				ss << "Device Vendor: "   << glGetString(GL_VENDOR)                   << std::endl;
@@ -102,7 +97,7 @@ namespace {
 int main() {
 	// Init
 	setup_status status = setup();
-	if (status.code != setup_result::SUCCESS)
+	if (status.code != 0)
 		return -1;
 
 	simulation::Simulation simulation;
@@ -114,7 +109,7 @@ int main() {
 	float frame_start_time = utils::elapsed_time<float>();
 
 	// Run until Esc. pressed or N seconds elapsed
-	while (check_running(status.window, INT_MAX)) {
+	while (check_running(status.window, 12)) {
 		{ // Per-frame updating and drawing here
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			simulation.update_simulation(status.window);
